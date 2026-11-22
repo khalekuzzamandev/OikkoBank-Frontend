@@ -1,9 +1,7 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-   <div>
-    heloo
+   <div className="min-h-screen bg-amber-700">
+    home
    </div>
   );
 }
