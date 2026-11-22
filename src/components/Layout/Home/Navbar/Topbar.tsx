@@ -9,7 +9,7 @@ import {
 
 const Topbar = () => {
   return (
-    <div className="w-full bg-[#003566] text-white">
+    <div className="w-full border-b border-[#ff7900]/30 bg-[#003566] text-white shadow-sm">
       <div className="mx-auto flex h-10 max-w-[1440px] items-center justify-between px-6">
 
         {/* Left Side */}

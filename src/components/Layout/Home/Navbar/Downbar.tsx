@@ -26,46 +26,45 @@ const Downbar = () => {
   };
 
   return (
-    <nav className="relative z-50 w-full bg-white shadow-sm">
+    <nav className="relative z-50 w-full shadow-sm bg-[#003566] py-4">
+      <div className="mx-auto flex px-4 py-3 w-full max-w-7xl items-center justify-between gap-5  bg-white rounded-md">
 
-      <div className="flex min-h-[68px] w-full items-center">
+        {/* Logo */}
+        <Link href="/" className="flex shrink-0 items-center">
+          <Image
+            src="/images/oikko bank logo.PNG"
+            alt="Oikko Bank"
+            width={200}
+            height={200}
+            priority
+            className="h-auto object-contain"
+          />
+        </Link>
 
-        {/* Logo Section */}
-        <div className="flex min-w-fit items-center pl-5">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src={'/images/OikkoBank Fintech Logo.png'}
-              alt="Oikko Bank"
-              width={184}
-              height={184} />
-          </Link>
-        </div>
-
-        {/* Navigation Section */}
-        <div className="flex flex-1 items-center justify-end gap-5 px-5 md:px-8 lg:px-10">
-
+        {/* Navigation */}
+        <div className="flex items-center justify-end gap-4 lg:gap-7">
           <div className="hidden items-center gap-5 lg:flex xl:gap-7">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="whitespace-nowrap text-[13px] font-medium text-[#1762AE] transition-colors duration-200 hover:text-[#003566]"
+                className="whitespace-nowrap text-[12px] font-semibold text-[#1762AE] transition-colors duration-200 hover:text-[#003566] xl:text-[13px]"
               >
                 {link.name}
               </Link>
             ))}
           </div>
 
-          {/* Search Button */}
+          {/* Search */}
           <button
             onClick={() => setSearchOpen(!searchOpen)}
             aria-label="Toggle search"
-            className="flex shrink-0 items-center justify-center text-white transition  px-4 py-2 rounded-md bg-[#003566] "
+            className="flex h-10 w-11 shrink-0 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#1762AE]"
           >
             {searchOpen ? (
-              <X size={23} strokeWidth={2.5} />
+              <X size={22} />
             ) : (
-              <Search size={23} strokeWidth={2.8} />
+              <Search size={22} />
             )}
           </button>
         </div>
@@ -73,28 +72,24 @@ const Downbar = () => {
 
       {/* Search Bar */}
       {searchOpen && (
-        <div className="absolute left-0 top-full w-full border-t border-gray-100 bg-white px-5 py-5 shadow-lg md:px-10">
+        <div className="absolute left-0 top-full w-full px-5 py-5">
           <form
             onSubmit={handleSearch}
-            className="mx-auto flex max-w-4xl items-center gap-3 rounded-md border border-gray-200 bg-[#F8FAFC] px-4 py-3 focus-within:border-[#1762AE]"
+            className="mx-auto flex max-w-7xl items-center gap-3 rounded-md border border-white px-4 py-3"
           >
-            <Search size={21} className="shrink-0 text-[#1762AE]" />
+            <Search size={21} className="shrink-0 text-white" />
 
             <input
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search accounts, services, information..."
-              className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/70"
               autoFocus
             />
 
-            <button
-              type="submit"
-              aria-label="Submit search"
-              className="shrink-0 text-[#1762AE] transition hover:text-[#003566]"
-            >
-              <ArrowRight size={22} />
+            <button type="submit" aria-label="Submit search">
+              <ArrowRight size={22} className="text-white" />
             </button>
           </form>
         </div>

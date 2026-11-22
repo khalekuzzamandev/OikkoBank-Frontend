@@ -1,7 +1,11 @@
+import Hero from "@/components/Layout/Home/Hero";
+import QuickAccess from "@/components/Layout/Home/QuickAccess";
+
 export default function Home() {
   return (
-   <div className="min-h-screen bg-amber-700">
-    home
+   <div className="min-h-screen">
+    <Hero/>
+    |<QuickAccess/>
    </div>
   );
 }

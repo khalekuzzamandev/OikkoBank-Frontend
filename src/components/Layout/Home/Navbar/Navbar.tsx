@@ -18,10 +18,12 @@ import {
 
 import Topbar from "./Topbar";
 import Downbar from "./Downbar";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const navLinks = [
@@ -37,24 +39,26 @@ const Navbar = () => {
 
   const closeMenu = () => {
     setMenuOpen(false);
-    setSearchOpen(false);
   };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (searchValue.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchValue)}`;
+      router.push(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+      closeMenu();
     }
   };
 
   return (
-    <header className="w-full">
+    <header className="sticky top-0 z-50 w-full bg-white">
 
       {/* Desktop Navbar */}
       <div className="hidden lg:block">
         <Topbar />
-        <Downbar />
+        <div className="">
+          <Downbar />
+        </div>
       </div>
 
       {/* Mobile Navbar */}
@@ -62,30 +66,16 @@ const Navbar = () => {
 
         {/* Mobile Header */}
         <div className="flex h-[68px] items-center justify-between bg-white px-5 shadow-sm">
-
-          {/* Logo */}
-          <Link
-            href="/"
-            onClick={closeMenu}
-            className="flex items-center gap-2"
-          >
-            <svg
-              width="34"
-              height="34"
-              viewBox="0 0 40 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M15 3L29 3L37 17H23L15 3Z" fill="#E63946" />
-              <path d="M3 17L10 5L17 17L10 29L3 17Z" fill="#2463A6" />
-              <path d="M10 29L17 17H33L26 29H10Z" fill="#159957" />
-              <path d="M17 17L23 17L30 29H17L10 17H17Z" fill="#F4A62A" />
-            </svg>
-
-            <span className="text-[22px] font-semibold tracking-tight text-[#252525]">
-              Prime Bank
-            </span>
-          </Link>
+          {/* Logo Section */}
+          <div className="flex min-w-fit items-center">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src={'/images/OikkoBank Fintech Logo.png'}
+                alt="Oikko Bank"
+                width={184}
+                height={184} />
+            </Link>
+          </div>
 
           {/* Hamburger Button */}
           <button
