@@ -16,7 +16,7 @@ const services = [
   {
     title: "Open Account",
     subtitle: "Right Now",
-    href: "/accounts/open",
+    href: "/register",
     icon: UserRoundPlus,
   },
   {
@@ -32,7 +32,7 @@ const services = [
     icon: MapPinned,
   },
   {
-    title: "Prime",
+    title: "Oikko",
     subtitle: "Shonjojog Login",
     href: "/login",
     icon: Store,

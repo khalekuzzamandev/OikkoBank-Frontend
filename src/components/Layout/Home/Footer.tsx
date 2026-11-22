@@ -109,7 +109,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-3 py-5 text-center text-xs md:flex-row md:text-left">
           <p className="font-semibold">
-            Copyright &copy; {new Date().getFullYear()} Oikko Bank PLC. All
+            Copyright &copy; 2026 Oikko Bank PLC. All
             rights reserved.
           </p>
 
