@@ -19,113 +19,113 @@ type Section = { title: string; fields: Field[] };
 
 const sections: Section[] = [
   {
-    title: "ব্যক্তিগত তথ্য",
+    title: "Personal Information",
     fields: [
-      { name: "name", label: "পুরো নাম", placeholder: "আপনার পুরো নাম" },
-      { name: "fatherName", label: "পিতার নাম", placeholder: "পিতার নাম" },
-      { name: "motherName", label: "মাতার নাম", placeholder: "মাতার নাম" },
-      { name: "dob", label: "জন্ম তারিখ", type: "date" },
+      { name: "name", label: "Full Name", placeholder: "Your full name" },
+      { name: "fatherName", label: "Father's Name", placeholder: "Father's name" },
+      { name: "motherName", label: "Mother's Name", placeholder: "Mother's name" },
+      { name: "dob", label: "Date of Birth", type: "date" },
       {
         name: "gender",
-        label: "লিঙ্গ",
+        label: "Gender",
         options: [
-          { value: "male", label: "পুরুষ" },
-          { value: "female", label: "নারী" },
-          { value: "other", label: "অন্যান্য" },
+          { value: "male", label: "Male" },
+          { value: "female", label: "Female" },
+          { value: "other", label: "Other" },
         ],
       },
       {
         name: "maritalStatus",
-        label: "বৈবাহিক অবস্থা",
+        label: "Marital Status",
         options: [
-          { value: "single", label: "অবিবাহিত" },
-          { value: "married", label: "বিবাহিত" },
-          { value: "divorced", label: "বিবাহবিচ্ছিন্ন" },
-          { value: "widowed", label: "বিধবা/বিপত্নীক" },
+          { value: "single", label: "Single" },
+          { value: "married", label: "Married" },
+          { value: "divorced", label: "Divorced" },
+          { value: "widowed", label: "Widowed" },
         ],
       },
-      { name: "nid", label: "NID নম্বর", placeholder: "জাতীয় পরিচয়পত্র নম্বর" },
-      { name: "occupation", label: "পেশা", placeholder: "আপনার পেশা" },
+      { name: "nid", label: "NID Number", placeholder: "National ID number" },
+      { name: "occupation", label: "Occupation", placeholder: "Your occupation" },
       {
         name: "religion",
-        label: "ধর্ম",
+        label: "Religion",
         options: [
-          { value: "islam", label: "ইসলাম" },
-          { value: "hinduism", label: "হিন্দু" },
-          { value: "buddhism", label: "বৌদ্ধ" },
-          { value: "christianity", label: "খ্রিস্টান" },
-          { value: "other", label: "অন্যান্য" },
+          { value: "islam", label: "Islam" },
+          { value: "hinduism", label: "Hinduism" },
+          { value: "buddhism", label: "Buddhism" },
+          { value: "christianity", label: "Christianity" },
+          { value: "other", label: "Other" },
         ],
       },
     ],
   },
   {
-    title: "যোগাযোগ",
+    title: "Contact",
     fields: [
-      { name: "email", label: "ইমেইল", type: "email", placeholder: "you@example.com" },
-      { name: "phone", label: "মোবাইল নম্বর", placeholder: "01XXXXXXXXX" },
-      { name: "altPhone", label: "বিকল্প মোবাইল নম্বর", placeholder: "01XXXXXXXXX" },
+      { name: "email", label: "Email", type: "email", placeholder: "you@example.com" },
+      { name: "phone", label: "Mobile Number", placeholder: "01XXXXXXXXX" },
+      { name: "altPhone", label: "Alternative Mobile Number", placeholder: "01XXXXXXXXX" },
     ],
   },
   {
-    title: "বর্তমান ঠিকানা",
+    title: "Present Address",
     fields: [
       {
         name: "division",
-        label: "বিভাগ",
+        label: "Division",
         options: [
-          { value: "ঢাকা", label: "ঢাকা" },
-          { value: "চট্টগ্রাম", label: "চট্টগ্রাম" },
-          { value: "রাজশাহী", label: "রাজশাহী" },
-          { value: "খুলনা", label: "খুলনা" },
-          { value: "বরিশাল", label: "বরিশাল" },
-          { value: "সিলেট", label: "সিলেট" },
-          { value: "রংপুর", label: "রংপুর" },
-          { value: "ময়মনসিংহ", label: "ময়মনসিংহ" },
+          { value: "Dhaka", label: "Dhaka" },
+          { value: "Chattogram", label: "Chattogram" },
+          { value: "Rajshahi", label: "Rajshahi" },
+          { value: "Khulna", label: "Khulna" },
+          { value: "Barishal", label: "Barishal" },
+          { value: "Sylhet", label: "Sylhet" },
+          { value: "Rangpur", label: "Rangpur" },
+          { value: "Mymensingh", label: "Mymensingh" },
         ],
       },
-      { name: "district", label: "জেলা", placeholder: "জেলা" },
-      { name: "thana", label: "থানা / উপজেলা", placeholder: "থানা / উপজেলা" },
-      { name: "postOffice", label: "পোস্ট অফিস", placeholder: "পোস্ট অফিস" },
-      { name: "postCode", label: "পোস্ট কোড", placeholder: "পোস্ট কোড" },
-      { name: "village", label: "গ্রাম / এলাকা", placeholder: "গ্রাম / এলাকা" },
+      { name: "district", label: "District", placeholder: "District" },
+      { name: "thana", label: "Thana / Upazila", placeholder: "Thana / Upazila" },
+      { name: "postOffice", label: "Post Office", placeholder: "Post office" },
+      { name: "postCode", label: "Post Code", placeholder: "Post code" },
+      { name: "village", label: "Village / Area", placeholder: "Village / Area" },
       {
         name: "address",
-        label: "বাসা / রোড / বিস্তারিত ঠিকানা",
-        placeholder: "বাসা নম্বর, রোড, ব্লক ইত্যাদি",
+        label: "House / Road / Detailed Address",
+        placeholder: "House number, road, block, etc.",
         full: true,
       },
     ],
   },
   {
-    title: "অ্যাকাউন্ট ও নিরাপত্তা",
+    title: "Account & Security",
     fields: [
       {
         name: "accountType",
-        label: "অ্যাকাউন্টের ধরন",
+        label: "Account Type",
         options: [
           { value: "savings", label: "Savings Account" },
           { value: "current", label: "Current Account" },
           { value: "business", label: "Business Account" },
         ],
       },
-      { name: "nomineeName", label: "নমিনির নাম", placeholder: "নমিনির নাম" },
-      { name: "nomineeRelation", label: "নমিনির সাথে সম্পর্ক", placeholder: "যেমন: স্ত্রী, ভাই" },
-      { name: "nomineePhone", label: "নমিনির মোবাইল নম্বর", placeholder: "01XXXXXXXXX" },
-      { name: "nomineeNid", label: "নমিনির NID নম্বর", placeholder: "নমিনির জাতীয় পরিচয়পত্র নম্বর" },
-      { name: "photo", label: "ছবি", type: "file" },
-      { name: "password", label: "পাসওয়ার্ড", type: "password", placeholder: "কমপক্ষে ৮ অক্ষর" },
+      { name: "nomineeName", label: "Nominee's Name", placeholder: "Nominee's name" },
+      { name: "nomineeRelation", label: "Relation with Nominee", placeholder: "e.g. Spouse, Brother" },
+      { name: "nomineePhone", label: "Nominee's Mobile Number", placeholder: "01XXXXXXXXX" },
+      { name: "nomineeNid", label: "Nominee's NID Number", placeholder: "Nominee's national ID number" },
+      { name: "photo", label: "Photo", type: "file" },
+      { name: "password", label: "Password", type: "password", placeholder: "At least 8 characters" },
       {
         name: "confirmPassword",
-        label: "পাসওয়ার্ড আবার দিন",
+        label: "Confirm Password",
         type: "password",
-        placeholder: "পাসওয়ার্ড আবার লিখুন",
+        placeholder: "Re-enter your password",
       },
     ],
   },
 ];
 
-const REQUIRED_MSG = "এই ফিল্ডটি আবশ্যক";
+const REQUIRED_MSG = "This field is required";
 
 const validate = (data: Record<string, FormDataEntryValue>) => {
   const errors: Record<string, string> = {};
@@ -139,7 +139,7 @@ const validate = (data: Record<string, FormDataEntryValue>) => {
       if (f.type === "file") {
         const file = data[f.name];
         if (!(file instanceof File) || file.size === 0) errors[f.name] = REQUIRED_MSG;
-        else if (!file.type.startsWith("image/")) errors[f.name] = "শুধু ছবি আপলোড করুন";
+        else if (!file.type.startsWith("image/")) errors[f.name] = "Please upload an image file only";
         return;
       }
       if (!get(f.name)) errors[f.name] = REQUIRED_MSG;
@@ -149,20 +149,20 @@ const validate = (data: Record<string, FormDataEntryValue>) => {
   const phoneRe = /^01[3-9]\d{8}$/;
   const nidRe = /^(\d{10}|\d{13}|\d{17})$/;
 
-  if (!errors.email && !/^\S+@\S+\.\S+$/.test(get("email"))) errors.email = "সঠিক ইমেইল দিন";
-  if (!errors.phone && !phoneRe.test(get("phone"))) errors.phone = "সঠিক মোবাইল নম্বর দিন";
-  if (!errors.altPhone && !phoneRe.test(get("altPhone"))) errors.altPhone = "সঠিক মোবাইল নম্বর দিন";
+  if (!errors.email && !/^\S+@\S+\.\S+$/.test(get("email"))) errors.email = "Enter a valid email address";
+  if (!errors.phone && !phoneRe.test(get("phone"))) errors.phone = "Enter a valid mobile number";
+  if (!errors.altPhone && !phoneRe.test(get("altPhone"))) errors.altPhone = "Enter a valid mobile number";
   if (!errors.nomineePhone && !phoneRe.test(get("nomineePhone")))
-    errors.nomineePhone = "সঠিক মোবাইল নম্বর দিন";
-  if (!errors.nid && !nidRe.test(get("nid"))) errors.nid = "NID ১০, ১৩ বা ১৭ ডিজিটের হতে হবে";
+    errors.nomineePhone = "Enter a valid mobile number";
+  if (!errors.nid && !nidRe.test(get("nid"))) errors.nid = "NID must be 10, 13 or 17 digits";
   if (!errors.nomineeNid && !nidRe.test(get("nomineeNid")))
-    errors.nomineeNid = "NID ১০, ১৩ বা ১৭ ডিজিটের হতে হবে";
+    errors.nomineeNid = "NID must be 10, 13 or 17 digits";
   if (!errors.postCode && !/^\d{4}$/.test(get("postCode")))
-    errors.postCode = "পোস্ট কোড ৪ ডিজিটের হতে হবে";
+    errors.postCode = "Post code must be 4 digits";
   if (!errors.password && get("password").length < 8)
-    errors.password = "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে";
+    errors.password = "Password must be at least 8 characters";
   if (!errors.confirmPassword && get("confirmPassword") !== get("password"))
-    errors.confirmPassword = "পাসওয়ার্ড মিলছে না";
+    errors.confirmPassword = "Passwords do not match";
 
   return errors;
 };
@@ -223,7 +223,7 @@ const RegisterPage = () => {
             className={inputClassName}
           >
             <option value="" disabled>
-              নির্বাচন করুন
+              Select
             </option>
             {f.options.map((o) => (
               <option key={o.value} value={o.value}>
@@ -261,9 +261,9 @@ const RegisterPage = () => {
               className="h-auto w-36 object-contain"
             />
           </Link>
-          <h1 className="mt-3 text-xl font-semibold text-[#003566]">নতুন অ্যাকাউন্টের আবেদন</h1>
+          <h1 className="mt-3 text-xl font-semibold text-[#003566]">New Account Application</h1>
           <p className="mt-1 text-sm text-gray-500">
-            আবেদন জমা দিলে ব্যাংক স্টাফ আপনার তথ্য যাচাই করে অ্যাকাউন্ট চালু করবে।
+            After you submit, a bank staff member will verify your information and activate your account.
           </p>
         </div>
 
@@ -279,16 +279,16 @@ const RegisterPage = () => {
 
           <div className="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:justify-between">
             <p className="text-sm text-gray-600">
-              আগে থেকেই অ্যাকাউন্ট আছে?{" "}
+              Already have an account?{" "}
               <Link href="/login" className="font-semibold text-[#1762AE] hover:underline">
-                লগইন করুন
+                Log in
               </Link>
             </p>
             <button
               type="submit"
               className="w-full rounded-md bg-[#003566] px-10 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#1762AE] sm:w-auto"
             >
-              আবেদন জমা দিন
+              Submit Application
             </button>
           </div>
         </form>

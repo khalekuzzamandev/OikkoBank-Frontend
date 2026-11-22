@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 
-const REQUIRED_MSG = "এই ফিল্ডটি আবশ্যক";
+const REQUIRED_MSG = "This field is required";
 
 const baseInput =
   "w-full rounded-md border bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:ring-2";
@@ -38,7 +38,7 @@ const LoginPage = () => {
     const password = data.password || "";
 
     if (!email) result.email = REQUIRED_MSG;
-    else if (!/^\S+@\S+\.\S+$/.test(email)) result.email = "সঠিক ইমেইল দিন";
+    else if (!/^\S+@\S+\.\S+$/.test(email)) result.email = "Enter a valid email address";
 
     if (!password) result.password = REQUIRED_MSG;
 
@@ -66,14 +66,14 @@ const LoginPage = () => {
               className="h-auto w-36 object-contain"
             />
           </Link>
-          <h1 className="mt-4 text-xl font-semibold text-[#003566]">লগইন করুন</h1>
-          <p className="mt-1 text-sm text-gray-500">আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
+          <h1 className="mt-4 text-xl font-semibold text-[#003566]">Log In</h1>
+          <p className="mt-1 text-sm text-gray-500">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} onChange={handleChange} noValidate className="space-y-4">
           <div>
             <label htmlFor="email" className={labelClass}>
-              ইমেইল <span className="text-red-500">*</span>
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               id="email"
@@ -88,14 +88,14 @@ const LoginPage = () => {
 
           <div>
             <label htmlFor="password" className={labelClass}>
-              পাসওয়ার্ড <span className="text-red-500">*</span>
+              Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
                 id="password"
                 name="password"
                 type={showPass ? "text" : "password"}
-                placeholder="আপনার পাসওয়ার্ড"
+                placeholder="Your password"
                 autoComplete="current-password"
                 className={`${baseInput} pr-10 ${errors.password ? errorInput : normalInput}`}
               />
@@ -118,10 +118,10 @@ const LoginPage = () => {
                 name="remember"
                 className="h-4 w-4 rounded border-gray-300 accent-[#003566]"
               />
-              মনে রাখুন
+              Remember me
             </label>
             <Link href="/forgot-password" className="font-medium text-[#1762AE] hover:underline">
-              পাসওয়ার্ড ভুলে গেছেন?
+              Forgot password?
             </Link>
           </div>
 
@@ -129,14 +129,14 @@ const LoginPage = () => {
             type="submit"
             className="w-full rounded-md bg-[#003566] py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#1762AE]"
           >
-            লগইন
+            Log In
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-gray-600">
-          নতুন গ্রাহক?{" "}
+          New customer?{" "}
           <Link href="/register" className="font-semibold text-[#1762AE] hover:underline">
-            অ্যাকাউন্টের জন্য আবেদন করুন
+            Apply for an account
           </Link>
         </p>
       </div>
