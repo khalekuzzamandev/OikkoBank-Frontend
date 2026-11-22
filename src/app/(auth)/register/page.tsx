@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { authClient } from "@/components/lib/auth-client";
 
 type Option = { value: string; label: string };
 
@@ -178,6 +181,9 @@ const labelClass = "mb-1 block text-xs font-medium text-gray-700";
 const sectionClass = "mb-3 border-b border-gray-200 pb-1 text-sm font-semibold text-[#003566]";
 
 const RegisterPage = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.FormEvent<HTMLFormElement>) => {
@@ -191,19 +197,50 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget));
-    const result = validate(data);
-    setErrors(result);
+    setSubmitError("");
 
-    if (Object.keys(result).length > 0) {
-      const first = Object.keys(result)[0];
+    const data = Object.fromEntries(new FormData(e.currentTarget));
+    const validation = validate(data);
+    setErrors(validation);
+
+    if (Object.keys(validation).length > 0) {
+      const first = Object.keys(validation)[0];
       document.getElementById(first)?.focus();
       return;
     }
 
-    console.log(data);
+    const { photo, confirmPassword, name, email, password, ...rest } = data as Record<
+      string,
+      FormDataEntryValue
+    >;
+
+    const extra = Object.fromEntries(
+      Object.entries(rest).map(([k, v]) => [k, String(v).trim()])
+    );
+
+    setLoading(true);
+
+    try {
+      const res = await authClient.signUp.email({
+        name: String(name).trim(),
+        email: String(email).trim().toLowerCase(),
+        password: String(password),
+        ...extra,
+      } as Parameters<typeof authClient.signUp.email>[0]);
+
+      if (res.error) {
+        setSubmitError(res.error.message || "Registration failed.");
+        return;
+      }
+
+      router.push("/login");
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderField = (f: Field) => {
@@ -216,12 +253,7 @@ const RegisterPage = () => {
         </label>
 
         {f.options ? (
-          <select
-            id={f.name}
-            name={f.name}
-            defaultValue=""
-            className={inputClassName}
-          >
+          <select id={f.name} name={f.name} defaultValue="" className={inputClassName}>
             <option value="" disabled>
               Select
             </option>
@@ -268,6 +300,12 @@ const RegisterPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} onChange={handleChange} noValidate className="space-y-5">
+          {submitError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+              {submitError}
+            </div>
+          )}
+
           {sections.map((section) => (
             <div key={section.title}>
               <h2 className={sectionClass}>{section.title}</h2>
@@ -286,9 +324,11 @@ const RegisterPage = () => {
             </p>
             <button
               type="submit"
-              className="w-full rounded-md bg-[#003566] px-10 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#1762AE] sm:w-auto"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-md bg-[#003566] px-10 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#1762AE] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
-              Submit Application
+              {loading && <Loader2 size={16} className="animate-spin" />}
+              {loading ? "Submitting..." : "Submit Application"}
             </button>
           </div>
         </form>
