@@ -63,7 +63,7 @@ const Navbar = () => {
         <Topbar />
         <Downbar />
       </div>
-
+      {/* mobile responsives */}
       <div className="relative lg:hidden">
         <div className="flex h-[68px] items-center justify-between bg-white px-4 shadow-sm sm:px-5">
           <div className="flex min-w-0 items-center">

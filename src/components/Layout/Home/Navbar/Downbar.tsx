@@ -87,7 +87,7 @@ const Downbar = () => {
       </div>
 
       {searchOpen && (
-        <div className="absolute left-0 top-full w-full bg-white p-4 shadow-lg">
+        <div className="absolute left-0 top-full w-full bg-none p-4 shadow-lg">
           <form
             onSubmit={handleSearch}
             className="mx-auto flex max-w-3xl items-center gap-3"

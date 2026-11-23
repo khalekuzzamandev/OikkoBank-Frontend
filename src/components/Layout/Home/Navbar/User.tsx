@@ -1,12 +1,21 @@
+
 "use client";
 
 import Link from "next/link";
-import { UserRound } from "lucide-react";
-import { selectUser } from "@/Redux/features/UserSlice";
-import { useAppSelector } from "@/Redux/hooks";
+import { useRouter } from "next/navigation";
+import { UserRound, LogOut } from "lucide-react";
+import { selectUser, clearUser } from "@/Redux/features/UserSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/hooks";
 
 const User = () => {
   const user = useAppSelector(selectUser);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    dispatch(clearUser());
+    router.replace("/login");
+  };
 
   if (!user) {
     return (
@@ -36,12 +45,24 @@ const User = () => {
       >
         {initials || <UserRound size={18} />}
       </div>
-      <div className="min-w-0">
+
+      <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-[#003566]">
           {user.name}
         </p>
-        <p className="truncate text-xs text-gray-500">{user.email}</p>
+        <p className="truncate text-xs text-gray-500">
+          {user.email}
+        </p>
       </div>
+
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="inline-flex shrink-0 items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+      >
+        <LogOut size={17} />
+        <span className="hidden sm:inline">Logout</span>
+      </button>
     </div>
   );
 };
