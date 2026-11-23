@@ -1,55 +1,98 @@
+
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
+import { setUser } from "@/Redux/features/UserSlice";
+import { useAppDispatch } from "@/Redux/hooks";
+import { authClient } from "@/components/lib/auth-client";
 
 const REQUIRED_MSG = "This field is required";
 
-const baseInput =
+const INPUT_CLASS =
   "w-full rounded-md border bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:ring-2";
-const normalInput = "border-gray-300 focus:border-[#1762AE] focus:ring-[#1762AE]/20";
-const errorInput = "border-red-500 focus:border-red-500 focus:ring-red-500/20";
-
-const labelClass = "mb-1 block text-xs font-medium text-gray-700";
+const NORMAL_INPUT =
+  "border-gray-300 focus:border-[#1762AE] focus:ring-[#1762AE]/20";
+const ERROR_INPUT =
+  "border-red-500 focus:border-red-500 focus:ring-red-500/20";
+const LABEL_CLASS = "mb-1 block text-xs font-medium text-gray-700";
 
 const LoginPage = () => {
+  const dispatch = useAppDispatch();
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showPass, setShowPass] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.FormEvent<HTMLFormElement>) => {
     const target = e.target as HTMLInputElement;
+
     if (target.name && errors[target.name]) {
       setErrors((prev) => {
-        const next = { ...prev };
-        delete next[target.name];
-        return next;
+        const updatedErrors = { ...prev };
+        delete updatedErrors[target.name];
+        return updatedErrors;
       });
     }
+
+    if (error) setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
-    const result: Record<string, string> = {};
+  const validateForm = (data: Record<string, string>) => {
+    const newErrors: Record<string, string> = {};
 
-    const email = (data.email || "").trim();
+    const email = data.email?.trim() || "";
     const password = data.password || "";
 
-    if (!email) result.email = REQUIRED_MSG;
-    else if (!/^\S+@\S+\.\S+$/.test(email)) result.email = "Enter a valid email address";
+    if (!email) {
+      newErrors.email = REQUIRED_MSG;
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+      newErrors.email = "Enter a valid email address";
+    }
 
-    if (!password) result.password = REQUIRED_MSG;
+    if (!password) {
+      newErrors.password = REQUIRED_MSG;
+    }
 
-    setErrors(result);
+    return newErrors;
+  };
 
-    if (Object.keys(result).length > 0) {
-      document.getElementById(Object.keys(result)[0])?.focus();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData) as Record<string, string>;
+
+    const newErrors = validateForm(data);
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      document.getElementById(Object.keys(newErrors)[0])?.focus();
       return;
     }
 
-    console.log(data);
+    setLoading(true);
+    setError("");
+
+    try {
+      const { data: session, error } = await authClient.signIn.email({
+        email: data.email.trim(),
+        password: data.password,
+        callbackURL: "/",
+      });
+
+      if (error) {
+        setError(error.message || "Invalid email or password.");
+      } else if (session?.user) {
+        dispatch(setUser(session.user));
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,49 +109,69 @@ const LoginPage = () => {
               className="h-auto w-36 object-contain"
             />
           </Link>
-          <h1 className="mt-4 text-xl font-semibold text-[#003566]">Log In</h1>
-          <p className="mt-1 text-sm text-gray-500">Sign in to your account</p>
+
+          <h1 className="mt-4 text-xl font-semibold text-[#003566]">
+            Log In
+          </h1>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Sign in to your account
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} onChange={handleChange} noValidate className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+          noValidate
+          className="space-y-4"
+        >
           <div>
-            <label htmlFor="email" className={labelClass}>
+            <label htmlFor="email" className={LABEL_CLASS}>
               Email <span className="text-red-500">*</span>
             </label>
+
             <input
               id="email"
               name="email"
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
-              className={`${baseInput} ${errors.email ? errorInput : normalInput}`}
+              className={`${INPUT_CLASS} ${errors.email ? ERROR_INPUT : NORMAL_INPUT}`}
             />
-            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+
+            {errors.email && (
+              <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="password" className={labelClass}>
+            <label htmlFor="password" className={LABEL_CLASS}>
               Password <span className="text-red-500">*</span>
             </label>
+
             <div className="relative">
               <input
                 id="password"
                 name="password"
-                type={showPass ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 placeholder="Your password"
                 autoComplete="current-password"
-                className={`${baseInput} pr-10 ${errors.password ? errorInput : normalInput}`}
+                className={`${INPUT_CLASS} pr-10 ${errors.password ? ERROR_INPUT : NORMAL_INPUT}`}
               />
+
               <button
                 type="button"
-                onClick={() => setShowPass(!showPass)}
+                onClick={() => setShowPassword(!showPassword)}
                 aria-label="Toggle password visibility"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#1762AE]"
               >
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
+
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+            )}
           </div>
 
           <div className="flex items-center justify-between text-sm">
@@ -120,22 +183,36 @@ const LoginPage = () => {
               />
               Remember me
             </label>
-            <Link href="/forgot-password" className="font-medium text-[#1762AE] hover:underline">
+
+            <Link
+              href="/forgot-password"
+              className="font-medium text-[#1762AE] hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
 
+          {error && (
+            <p className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="w-full rounded-md bg-[#003566] py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#1762AE]"
+            disabled={loading}
+            className="w-full rounded-md bg-[#003566] py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#1762AE] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Log In
+            {loading ? "Logging in..." : "Log In"}
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-gray-600">
           New customer?{" "}
-          <Link href="/register" className="font-semibold text-[#1762AE] hover:underline">
+          <Link
+            href="/register"
+            className="font-semibold text-[#1762AE] hover:underline"
+          >
             Apply for an account
           </Link>
         </p>

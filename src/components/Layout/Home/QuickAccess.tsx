@@ -20,7 +20,7 @@ const services = [
     icon: UserRoundPlus,
   },
   {
-    title: "MyPrime",
+    title: "Oikko",
     subtitle: "Login/Sign-up",
     href: "/login",
     icon: WalletCards,
