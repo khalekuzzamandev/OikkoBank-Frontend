@@ -5,7 +5,7 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className=" px-5 pt-5 border-r">
+      <div className="border-r">
         <DashboradSidebar />
       </div>
 

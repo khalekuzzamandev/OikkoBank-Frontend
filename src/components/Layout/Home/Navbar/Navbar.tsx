@@ -19,7 +19,7 @@ import {
 import Topbar from "./Topbar";
 import Downbar from "./Downbar";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { selectUser } from "@/Redux/features/UserSlice";
 import { useSelector } from "react-redux";
 
@@ -28,6 +28,12 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const user = useSelector(selectUser);
+  
+  // dashboard er jonno nav hide
+  const pathname = usePathname();
+  if (pathname?.startsWith("/dashboard")) {
+    return null;
+  }
 
   const navLinks = [
     { name: "All Accounts at a Glance", href: "/accounts" },
@@ -53,9 +59,6 @@ const Navbar = () => {
     }
   };
 
-  const dashboardHref = user?.role
-    ? `/${user.role.toLowerCase()}`
-    : "/";
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white">
@@ -81,7 +84,7 @@ const Navbar = () => {
           <div className="flex shrink-0 items-center gap-2">
             {user && (
               <Link
-                href={dashboardHref}
+                href={'/dashboard'}
                 aria-label="Dashboard"
                 title="Dashboard"
                 onClick={closeMenu}

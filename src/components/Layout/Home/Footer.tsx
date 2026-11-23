@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUp } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const linksColumn1 = [
   { name: 'Annual Reports', href: '/annual-reports' },
@@ -54,6 +55,12 @@ const Footer = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+   // dashboard er jonno nav hide
+    const pathname = usePathname();
+    if (pathname?.startsWith("/dashboard")) {
+      return null;
+    }
 
   return (
     <footer className="relative w-full bg-[#003566] text-white">
