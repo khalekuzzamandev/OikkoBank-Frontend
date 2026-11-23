@@ -24,7 +24,7 @@ export const auth = betterAuth({
       // extra filed
       role:{type:"string",defaultValue:"customer"},
       isBlocked:{type:"boolean",defaultValue:false},
-      status:{type:"string",defaultValue:"active"},
+      status:{type:"string",defaultValue:"pending"},
       isverified:{type:"boolean",defaultValue:false},
 
       fatherName: { type: "string", required: true },

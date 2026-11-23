@@ -14,7 +14,7 @@ import {
 
 const services = [
   {
-    title: "Open Account",
+    title: "Apply For Open Account",
     subtitle: "Right Now",
     href: "/register",
     icon: UserRoundPlus,

@@ -1,6 +1,5 @@
 import Contact from "@/components/Layout/Home/Contact";
 import Hero from "@/components/Layout/Home/Hero";
-import User from "@/components/Layout/Home/Navbar/User";
 import QuickAccess from "@/components/Layout/Home/QuickAccess";
 
 export default function Home() {
@@ -9,7 +8,7 @@ export default function Home() {
     <Hero/>
     <QuickAccess/>
     <Contact/>
-    <User/>
+
    </div>
   );
 }
