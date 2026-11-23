@@ -1,117 +1,138 @@
+
 "use client";
 
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
 import {
   Wallet,
-  Users,
   ArrowDownToLine,
   ArrowUpFromLine,
   HandCoins,
   ArrowLeftRight,
-  Clock,
-  CheckCircle2,
-  UserCheck,
-  ClipboardList,
   CreditCard,
+  History,
+  FileText,
+  ShieldCheck,
+  UserRound,
+  ArrowUpRight,
+  Plus,
 } from "lucide-react";
 
 import { selectUser } from "@/Redux/features/UserSlice";
 import { useAppSelector } from "@/Redux/hooks";
 
-type Stat = { title: string; value: string; note: string; icon: LucideIcon };
-type Action = { title: string; desc: string; href: string; icon: LucideIcon };
-type Row = { label: string; meta: string; value: string; status: string };
-type RoleConfig = {
-  title: string;
-  description: string;
-  stats: Stat[];
-  actions: Action[];
-  panelTitle: string;
-  rows: Row[];
-};
-
-const statusStyle: Record<string, string> = {
-  Completed: "bg-green-50 text-green-700",
-  Pending: "bg-amber-50 text-amber-700",
-  Review: "bg-blue-50 text-blue-700",
-};
-
-const roleData: Record<string, RoleConfig> = {
-  admin: {
-    title: "Admin overview",
-    description: "Bank-wide customers, deposits, withdrawals and loans.",
-    stats: [
-      { title: "Total customers", value: "12,450", note: "Across all branches", icon: Users },
-      { title: "Total deposits", value: "৳ 24,50,000", note: "All accounts", icon: ArrowDownToLine },
-      { title: "Total withdrawals", value: "৳ 8,75,000", note: "All accounts", icon: ArrowUpFromLine },
-      { title: "Total loans", value: "৳ 15,20,000", note: "Outstanding amount", icon: HandCoins },
-    ],
-    actions: [
-      { title: "Customers", desc: "View and manage customer records", href: "/dashboard/admin/customers", icon: Users },
-      { title: "Deposits", desc: "Review all deposit entries", href: "/dashboard/admin/deposits", icon: ArrowDownToLine },
-      { title: "Loans", desc: "Track and approve loans", href: "/dashboard/admin/loans", icon: HandCoins },
-      { title: "Transactions", desc: "Full transaction history", href: "/dashboard/admin/transactions", icon: ArrowLeftRight },
-    ],
-    panelTitle: "Recent transactions",
-    rows: [
-      { label: "Deposit — Rahim Uddin", meta: "Dhaka Main Branch", value: "৳ 50,000", status: "Completed" },
-      { label: "Loan request — Nusrat Jahan", meta: "Chattogram Branch", value: "৳ 3,00,000", status: "Review" },
-      { label: "Withdrawal — Karim Hossain", meta: "Sylhet Branch", value: "৳ 12,000", status: "Completed" },
-    ],
+const stats = [
+  {
+    title: "Available Balance",
+    value: "৳ 85,000",
+    note: "Current account balance",
+    icon: Wallet,
   },
-
- staff: {
-    title: "Branch overview",
-    description: "Branch performance, staff and items waiting for your approval.",
-    stats: [
-      { title: "Branch customers", value: "2,450", note: "Active accounts", icon: Users },
-      { title: "Branch deposits", value: "৳ 8,50,000", note: "This month", icon: ArrowDownToLine },
-      { title: "Total staff", value: "28", note: "On this branch", icon: UserCheck },
-      { title: "Pending approvals", value: "18", note: "Need your action", icon: Clock },
-    ],
-    actions: [
-      { title: "Branch customers", desc: "Customers under this branch", href: "/dashboard/manager/customers", icon: Users },
-      { title: "Staff", desc: "Manage employees and roles", href: "/dashboard/manager/staff", icon: UserCheck },
-      { title: "Approvals", desc: "Approve or reject requests", href: "/dashboard/manager/approvals", icon: CheckCircle2 },
-      { title: "Transactions", desc: "Branch transaction history", href: "/dashboard/manager/transactions", icon: ArrowLeftRight },
-    ],
-    panelTitle: "Pending approvals",
-    rows: [
-      { label: "Withdrawal above limit", meta: "Requested by Employee #104", value: "৳ 2,00,000", status: "Pending" },
-      { label: "New account opening", meta: "Requested by Employee #087", value: "—", status: "Pending" },
-      { label: "Loan application", meta: "Requested by Employee #112", value: "৳ 1,50,000", status: "Review" },
-    ],
+  {
+    title: "Total Deposits",
+    value: "৳ 1,50,000",
+    note: "Lifetime deposits",
+    icon: ArrowDownToLine,
   },
-
-  customer: {
-    title: "My banking overview",
-    description: "Your balance, deposits, withdrawals and loans at a glance.",
-    stats: [
-      { title: "Available balance", value: "৳ 85,000", note: "Savings account", icon: Wallet },
-      { title: "Total deposits", value: "৳ 1,50,000", note: "Lifetime", icon: ArrowDownToLine },
-      { title: "Total withdrawals", value: "৳ 65,000", note: "Lifetime", icon: ArrowUpFromLine },
-      { title: "Active loans", value: "৳ 25,000", note: "Remaining balance", icon: HandCoins },
-    ],
-    actions: [
-      { title: "My accounts", desc: "Account details and statements", href: "/dashboard/customer/accounts", icon: CreditCard },
-      { title: "Deposit money", desc: "Add funds to your account", href: "/dashboard/customer/deposits", icon: ArrowDownToLine },
-      { title: "Transfer money", desc: "Send money to another account", href: "/dashboard/customer/transfers", icon: ArrowLeftRight },
-      { title: "My loans", desc: "Loan status and repayments", href: "/dashboard/customer/loans", icon: HandCoins },
-    ],
-    panelTitle: "Recent activity",
-    rows: [
-      { label: "Deposit", meta: "Cash deposit at branch", value: "+ ৳ 20,000", status: "Completed" },
-      { label: "Transfer to Rahim Uddin", meta: "Mobile app", value: "- ৳ 5,000", status: "Completed" },
-      { label: "Loan installment", meta: "Due this week", value: "৳ 2,500", status: "Pending" },
-    ],
+  {
+    title: "Total Withdrawals",
+    value: "৳ 65,000",
+    note: "Lifetime withdrawals",
+    icon: ArrowUpFromLine,
   },
-};
+  {
+    title: "Active Loans",
+    value: "৳ 25,000",
+    note: "Remaining loan amount",
+    icon: HandCoins,
+  },
+];
 
-export default function DashboardOverview() {
+const quickActions = [
+  {
+    title: "Deposit Money",
+    description: "Add money to your account",
+    href: "/dashboard/customer/deposits",
+    icon: ArrowDownToLine,
+    color: "bg-green-50 text-green-600",
+  },
+  {
+    title: "Withdraw Money",
+    description: "Withdraw from your account",
+    href: "/dashboard/customer/withdrawals",
+    icon: ArrowUpFromLine,
+    color: "bg-orange-50 text-orange-600",
+  },
+  {
+    title: "Transfer Money",
+    description: "Send money to another account",
+    href: "/dashboard/customer/transfers",
+    icon: ArrowLeftRight,
+    color: "bg-blue-50 text-blue-600",
+  },
+  {
+    title: "Apply for Loan",
+    description: "Explore available loan options",
+    href: "/dashboard/customer/loans",
+    icon: HandCoins,
+    color: "bg-purple-50 text-purple-600",
+  },
+  {
+    title: "My Accounts",
+    description: "View account details",
+    href: "/dashboard/customer/accounts",
+    icon: CreditCard,
+    color: "bg-indigo-50 text-indigo-600",
+  },
+  {
+    title: "Transaction History",
+    description: "View all your transactions",
+    href: "/dashboard/customer/transactions",
+    icon: History,
+    color: "bg-cyan-50 text-cyan-600",
+  },
+];
+
+const transactions = [
+  {
+    id: "TXN-100245",
+    title: "Money Deposit",
+    date: "Nov 23, 2026",
+    method: "Cash Deposit",
+    amount: "+ ৳ 20,000",
+    type: "credit",
+    status: "Completed",
+  },
+  {
+    id: "TXN-100244",
+    title: "Money Transfer",
+    date: "Nov 22, 2026",
+    method: "Online Transfer",
+    amount: "- ৳ 5,000",
+    type: "debit",
+    status: "Completed",
+  },
+  {
+    id: "TXN-100243",
+    title: "ATM Withdrawal",
+    date: "Nov 21, 2026",
+    method: "ATM",
+    amount: "- ৳ 3,000",
+    type: "debit",
+    status: "Completed",
+  },
+  {
+    id: "TXN-100242",
+    title: "Money Deposit",
+    date: "Nov 20, 2026",
+    method: "Bank Deposit",
+    amount: "+ ৳ 10,000",
+    type: "credit",
+    status: "Pending",
+  },
+];
+
+export default function CustomerDashboard() {
   const user = useAppSelector(selectUser);
-  const role = user?.role?.toLowerCase() ?? "";
-  const dashboard = roleData[role];
 
   if (!user) {
     return (
@@ -121,112 +142,291 @@ export default function DashboardOverview() {
     );
   }
 
-  if (!dashboard) {
-    return (
-      <div className="p-8 text-center">
-        <h2 className="text-xl font-bold text-[#003566]">Dashboard not available</h2>
-        <p className="mt-2 text-sm text-gray-500">
-          Your account has no dashboard role assigned. Contact your administrator.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#F4F7FB] p-4 sm:p-6 lg:p-8">
-      {/* Header */}
-      <header className="mb-8 flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[#003566] sm:text-3xl">
-            Welcome back, {user.name || "User"}
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">{dashboard.description}</p>
+    <div className="min-h-screen bg-[#F4F7FB]">
+
+      {/* Welcome Header + Financial Cards */}
+      <header className="mb-8 rounded-2xl bg-gradient-to-r from-[#003566] to-[#1762AE] p-5 text-white shadow-sm sm:p-7">
+
+        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-xs text-blue-100">
+              <ShieldCheck size={15} />
+              Welcome to Oikko Bank
+            </div>
+
+            <h1 className="text-2xl font-bold sm:text-3xl">
+              Hello, {user.name || "Customer"}!
+            </h1>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100">
+              Manage your money, track transactions and enjoy secure digital
+              banking services from one place.
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/customer/deposits"
+            className="inline-flex w-fit shrink-0 items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-[#003566] transition hover:bg-blue-50"
+          >
+            <Plus size={17} />
+            Add Money
+          </Link>
         </div>
-        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[#1762AE]/20 bg-white px-4 py-1.5 text-sm font-medium capitalize text-[#1762AE]">
-          <UserCheck size={16} />
-          {role}
-        </span>
+
+        {/* Financial Cards Inside Header */}
+        <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-4">
+          {stats.map((stat) => {
+            const Icon = stat.icon;
+
+            return (
+              <div
+                key={stat.title}
+                className="rounded-xl border border-white/20 bg-white/10 p-3 backdrop-blur-md transition hover:bg-white/15 sm:p-4"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-blue-100">
+                    {stat.title}
+                  </p>
+
+                  <Icon size={18} className="shrink-0 text-white/80" />
+                </div>
+
+                <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
+                  {stat.value}
+                </h3>
+
+                <p className="mt-1 text-[10px] text-blue-100 sm:text-xs">
+                  {stat.note}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </header>
 
-      {/* Stats */}
-      <section className="mb-8" aria-labelledby="overview-heading">
-        <h2 id="overview-heading" className="mb-4 text-lg font-semibold text-[#003566]">
-          {dashboard.title}
-        </h2>
+      {/* Quick Actions */}
+      <section className="mb-8">
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-[#003566]">
+            Quick Actions
+          </h2>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {dashboard.stats.map((stat) => {
-            const Icon = stat.icon;
+          <p className="mt-1 text-sm text-gray-500">
+            Access your frequently used banking services
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {quickActions.map((action) => {
+            const Icon = action.icon;
+
             return (
-              <div key={stat.title} className="rounded-xl border border-gray-200 bg-white p-5">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-500">{stat.title}</p>
-                  <Icon size={20} className="text-[#1762AE]" />
+              <Link
+                key={action.title}
+                href={action.href}
+                className="group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 transition hover:border-[#1762AE]/40 hover:shadow-md sm:p-5"
+              >
+                <div className="flex min-w-0 items-center gap-4">
+                  <div className={`shrink-0 rounded-xl p-3 ${action.color}`}>
+                    <Icon size={22} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-[#003566]">
+                      {action.title}
+                    </h3>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      {action.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="mt-3 text-2xl font-bold text-[#003566]">{stat.value}</p>
-                <p className="mt-1 text-xs text-gray-400">{stat.note}</p>
-              </div>
+
+                <ArrowUpRight
+                  size={19}
+                  className="shrink-0 text-gray-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-[#1762AE]"
+                />
+              </Link>
             );
           })}
         </div>
       </section>
 
-      {/* Actions + role panel */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <section className="lg:col-span-2" aria-labelledby="actions-heading">
-          <h2 id="actions-heading" className="mb-4 text-lg font-semibold text-[#003566]">
-            Quick actions
-          </h2>
+      {/* Transactions + Account Information */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
 
-          <div className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white">
-            {dashboard.actions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <Link
-                  key={action.title}
-                  href={action.href}
-                  className="group flex items-center gap-4 p-4 outline-none transition hover:bg-[#F4F7FB] focus-visible:bg-[#F4F7FB] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1762AE]"
-                >
-                  <div className="rounded-lg bg-[#EAF2FA] p-2.5 text-[#003566] transition group-hover:bg-[#003566] group-hover:text-white">
-                    <Icon size={20} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#003566]">{action.title}</p>
-                    <p className="truncate text-xs text-gray-500">{action.desc}</p>
-                  </div>
-                </Link>
-              );
-            })}
+        {/* Recent Transactions */}
+        <section className="overflow-hidden rounded-xl border border-gray-200 bg-white xl:col-span-2">
+
+          <div className="flex flex-col justify-between gap-3 border-b border-gray-100 p-5 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="font-bold text-[#003566]">
+                Recent Transactions
+              </h2>
+
+              <p className="mt-1 text-xs text-gray-500">
+                Your latest account activities
+              </p>
+            </div>
+
+            <Link
+              href="/dashboard/customer/transactions"
+              className="flex w-fit items-center gap-1 text-sm font-semibold text-[#1762AE] hover:underline"
+            >
+              View All
+              <ArrowUpRight size={16} />
+            </Link>
           </div>
-        </section>
 
-        <section className="lg:col-span-3" aria-labelledby="panel-heading">
-          <h2 id="panel-heading" className="mb-4 text-lg font-semibold text-[#003566]">
-            {dashboard.panelTitle}
-          </h2>
-
-          <div className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white">
-            {dashboard.rows.map((row) => (
-              <div key={row.label} className="flex items-center justify-between gap-4 p-4">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-gray-800">{row.label}</p>
-                  <p className="truncate text-xs text-gray-500">{row.meta}</p>
-                </div>
-                <div className="flex shrink-0 items-center gap-3">
-                  <span className="text-sm font-semibold text-[#003566]">{row.value}</span>
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyle[row.status] ?? "bg-gray-100 text-gray-600"
+          <div className="divide-y divide-gray-100">
+            {transactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="flex flex-col gap-3 p-4 transition hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <div
+                    className={`shrink-0 rounded-full p-3 ${transaction.type === "credit"
+                        ? "bg-green-50 text-green-600"
+                        : "bg-orange-50 text-orange-600"
                       }`}
                   >
-                    {row.status}
+                    {transaction.type === "credit" ? (
+                      <ArrowDownToLine size={19} />
+                    ) : (
+                      <ArrowUpFromLine size={19} />
+                    )}
+                  </div>
+
+                  <div className="min-w-0">
+                    <h3 className="truncate text-sm font-semibold text-gray-800">
+                      {transaction.title}
+                    </h3>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      {transaction.date} · {transaction.method}
+                    </p>
+
+                    <p className="mt-1 text-[11px] text-gray-400">
+                      {transaction.id}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end sm:gap-2">
+                  <p
+                    className={`text-sm font-bold ${transaction.type === "credit"
+                        ? "text-green-600"
+                        : "text-gray-800"
+                      }`}
+                  >
+                    {transaction.amount}
+                  </p>
+
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${transaction.status === "Completed"
+                        ? "bg-green-50 text-green-700"
+                        : "bg-amber-50 text-amber-700"
+                      }`}
+                  >
+                    {transaction.status}
                   </span>
                 </div>
               </div>
             ))}
           </div>
         </section>
+
+        {/* Account Information */}
+        <section className="h-fit overflow-hidden rounded-xl border border-gray-200 bg-white">
+
+          <div className="border-b border-gray-100 p-5">
+            <h2 className="font-bold text-[#003566]">
+              Account Information
+            </h2>
+
+            <p className="mt-1 text-xs text-gray-500">
+              Your personal banking details
+            </p>
+          </div>
+
+          <div className="p-5">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="rounded-full bg-[#EAF2FA] p-3 text-[#1762AE]">
+                <UserRound size={25} />
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="truncate font-bold text-[#003566]">
+                  {user.name || "Customer"}
+                </h3>
+
+                <p className="text-xs capitalize text-gray-500">
+                  {user.role || "Customer"}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs text-gray-400">Account Holder</p>
+                <p className="mt-1 text-sm font-semibold text-gray-700">
+                  {user.name || "Not available"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-400">Email Address</p>
+                <p className="mt-1 break-all text-sm font-semibold text-gray-700">
+                  {user.email || "Not available"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-400">Account Type</p>
+                <p className="mt-1 text-sm font-semibold text-gray-700">
+                  Savings Account
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-400">Account Number</p>
+                <p className="mt-1 text-sm font-semibold tracking-wider text-gray-700">
+                  1000 **** 4589
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/dashboard/customer/profile"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg border border-[#1762AE] py-3 text-sm font-semibold text-[#1762AE] transition hover:bg-[#1762AE] hover:text-white"
+            >
+              <FileText size={17} />
+              View Profile
+            </Link>
+          </div>
+        </section>
       </div>
 
+      {/* Security Notice */}
+      <div className="mt-6 flex flex-col gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 sm:flex-row sm:items-center">
+        <ShieldCheck className="shrink-0 text-blue-600" size={22} />
+
+        <div>
+          <h3 className="text-sm font-semibold text-blue-900">
+            Your Security Matters
+          </h3>
+
+          <p className="mt-1 text-xs leading-5 text-blue-700">
+            Oikko Bank uses secure banking practices to help protect your
+            account and financial information. Never share your password or
+            OTP with anyone.
+          </p>
+        </div>
+      </div>
+
+      {/* Footer */}
       <footer className="mt-10 text-center text-xs text-gray-400">
         © 2026 Oikko Bank. All rights reserved.
       </footer>
