@@ -98,17 +98,7 @@ const sections: Section[] = [
   {
     title: "Account & Security",
     fields: [
-      {
-        name: "accountType",
-        label: "Account Type",
-        options: [
-          { value: "savings", label: "Savings Account" },
-          { value: "current", label: "Current Account" },
-          { value: "business", label: "Business Account" },
-        ],
-      },
       { name: "nomineeName", label: "Nominee's Name", placeholder: "Nominee's name" },
-      { name: "nomineeRelation", label: "Relation with Nominee", placeholder: "e.g. Spouse, Brother" },
       { name: "nomineePhone", label: "Nominee's Mobile Number", placeholder: "01XXXXXXXXX" },
       { name: "nomineeNid", label: "Nominee's NID Number", placeholder: "Nominee's national ID number" },
       { name: "photo", label: "Photo", type: "file" },
@@ -248,7 +238,7 @@ const RegisterPage = () => {
         return;
       }
 
-      router.push("/login");
+      router.push("/underReview");
     } catch {
       setSubmitError("Something went wrong. Please try again.");
     } finally {

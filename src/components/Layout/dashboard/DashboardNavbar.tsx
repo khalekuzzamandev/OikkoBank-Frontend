@@ -87,7 +87,7 @@ const DashboardNavbar = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#003566] text-white shadow-lg shadow-[#003566]/10">
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#003566] text-white shadow-lg shadow-[#003566]/10 hidden xl:block">
 
       {/* Main Navbar */}
       <div className="flex min-h-[76px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
