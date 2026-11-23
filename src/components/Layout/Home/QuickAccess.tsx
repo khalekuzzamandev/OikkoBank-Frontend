@@ -28,7 +28,7 @@ const services = [
   {
     title: "Find",
     subtitle: "a Location",
-    href: "/locations",
+    href: "/location",
     icon: MapPinned,
   },
   {
