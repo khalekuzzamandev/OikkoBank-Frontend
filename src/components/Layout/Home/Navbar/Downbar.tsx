@@ -31,9 +31,7 @@ const Downbar = () => {
 
   const homeHref = user?.role ? `/${user.role.toLowerCase()}` : "/";
 
-  const dashboardHref = user?.role
-    ? `/${user.role.toLowerCase()}`
-    : "/";
+
 
   return (
     <nav className="relative z-50 w-full bg-[#003566] py-4 shadow-sm">
@@ -65,7 +63,7 @@ const Downbar = () => {
           <div className="flex items-center gap-3">
             {user && (
               <Link
-                href={dashboardHref}
+                href={'/dashboard'}
                 aria-label="Dashboard"
                 title="Dashboard"
                 className="flex h-10 w-11 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#00264a]"
