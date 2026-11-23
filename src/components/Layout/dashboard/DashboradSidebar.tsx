@@ -28,6 +28,7 @@ import {
   ChevronRight,
   Landmark,
 } from "lucide-react";
+import Profile from "./Profile";
 
 const DashboardItem = {
   admin: [
@@ -124,7 +125,7 @@ const DashboardSidebar = () => {
 
     return pathname === href || pathname.startsWith(`${href}/`);
   };
-
+  
   return (
     <>
       {/* Mobile Header */}
@@ -278,27 +279,7 @@ const DashboardSidebar = () => {
 
         {/* User Profile */}
         <div className="shrink-0 border-t border-white/10 pt-4">
-          <div className="flex min-w-0 items-center gap-3 rounded-xl bg-[#00254A] p-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F26B21] text-sm font-bold text-white">
-              {initials}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">
-                {user.name}
-              </p>
-              <p className="truncate text-xs text-white/55">
-                {user.email}
-              </p>
-              <p className="mt-1 text-[10px] font-semibold capitalize text-blue-200">
-                {role}
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-[9px] tracking-wider text-white/30">
-            OIKKO BANK © 2026
-          </p>
+         <Profile/>
         </div>
       </aside>
 
