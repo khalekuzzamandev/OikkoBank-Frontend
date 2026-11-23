@@ -5,6 +5,8 @@ export type User = {
   name: string;
   email: string;
   image?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   role?: string;
   isBlocked?: boolean;
   status?: string;
@@ -33,11 +35,28 @@ export type User = {
   nomineeNid?: string;
 };
 
+type UserInput = Omit<User, "createdAt" | "updatedAt"> & {
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+};
+
+const serializeDate = (value: string | Date | undefined) =>
+  value instanceof Date ? value.toISOString() : value;
+
 const userSlice = createSlice({
   name: "user",
   initialState: null as User | null,
   reducers: {
-    setUser: (_state, action: PayloadAction<User>) => action.payload,
+    setUser: {
+      reducer: (_state, action: PayloadAction<User>) => action.payload,
+      prepare: (user: UserInput) => ({
+        payload: {
+          ...user,
+          createdAt: serializeDate(user.createdAt),
+          updatedAt: serializeDate(user.updatedAt),
+        },
+      }),
+    },
     clearUser: () => null,
   },
 });
