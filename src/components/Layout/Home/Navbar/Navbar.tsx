@@ -8,6 +8,7 @@ import {
   X,
   Search,
   ChevronRight,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   FaFacebookF,
@@ -15,16 +16,18 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa6";
-
 import Topbar from "./Topbar";
 import Downbar from "./Downbar";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { selectUser } from "@/Redux/features/UserSlice";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const user = useSelector(selectUser);
 
   const navLinks = [
     { name: "All Accounts at a Glance", href: "/accounts" },
@@ -50,55 +53,59 @@ const Navbar = () => {
     }
   };
 
+  const dashboardHref = user?.role
+    ? `/${user.role.toLowerCase()}`
+    : "/";
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white">
-
-      {/* Desktop Navbar */}
       <div className="hidden lg:block">
         <Topbar />
-        <div className="">
-          <Downbar />
-        </div>
+        <Downbar />
       </div>
 
-      {/* Mobile Navbar */}
       <div className="relative lg:hidden">
-
-        {/* Mobile Header */}
-        <div className="flex h-[68px] items-center justify-between bg-white px-5 shadow-sm">
-          {/* Logo Section */}
-          <div className="flex min-w-fit items-center">
-            <Link href="/" className="flex items-center gap-2">
+        <div className="flex h-[68px] items-center justify-between bg-white px-4 shadow-sm sm:px-5">
+          <div className="flex min-w-0 items-center">
+            <Link href="/" className="flex items-center">
               <Image
-                src={'/images/OikkoBank Fintech Logo.png'}
+                src="/images/OikkoBank Fintech Logo.png"
                 alt="Oikko Bank"
                 width={184}
-                height={184} />
+                height={184}
+                className="h-auto w-36 object-contain sm:w-40"
+              />
             </Link>
           </div>
 
-          {/* Hamburger Button */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            className="flex h-10 w-10 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#1762AE]"
-          >
-            {menuOpen ? (
-              <X size={24} />
-            ) : (
-              <Menu size={24} />
+          <div className="flex shrink-0 items-center gap-2">
+            {user && (
+              <Link
+                href={dashboardHref}
+                aria-label="Dashboard"
+                title="Dashboard"
+                onClick={closeMenu}
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#1762AE]"
+              >
+                <LayoutDashboard size={21} />
+              </Link>
             )}
-          </button>
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              className="flex h-10 w-10 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#1762AE]"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Drawer */}
         {menuOpen && (
           <div className="absolute left-0 top-full z-50 max-h-[calc(100dvh-68px)] w-full overflow-y-auto bg-white shadow-xl">
-
-            {/* Social Section */}
             <div className="bg-[#003566] px-5 py-5 text-white">
-
               <p className="mb-4 text-sm font-medium tracking-wide">
                 Secure • Smart • Together
               </p>
@@ -122,7 +129,6 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Search */}
             <div className="border-b border-gray-100 p-5">
               <form
                 onSubmit={handleSearch}
@@ -144,9 +150,7 @@ const Navbar = () => {
               </form>
             </div>
 
-            {/* Navigation Links */}
             <div className="px-5 py-3">
-
               <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-widest text-gray-400">
                 Main Navigation
               </p>
@@ -159,22 +163,16 @@ const Navbar = () => {
                   className="flex items-center justify-between border-b border-gray-100 px-2 py-4 text-[14px] font-medium text-[#003566] transition hover:bg-[#F3F7FC]"
                 >
                   {link.name}
-
-                  <ChevronRight
-                    size={18}
-                    className="text-[#1762AE]"
-                  />
+                  <ChevronRight size={18} className="text-[#1762AE]" />
                 </Link>
               ))}
             </div>
 
-            {/* Footer */}
             <div className="bg-[#F3F6FA] px-6 py-5">
               <p className="text-center text-xs text-gray-500">
-                © 2026 Prime Bank. All Rights Reserved.
+                © 2026 Oikko Bank. All Rights Reserved.
               </p>
             </div>
-
           </div>
         )}
       </div>
