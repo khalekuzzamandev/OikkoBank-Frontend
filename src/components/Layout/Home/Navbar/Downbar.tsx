@@ -63,7 +63,7 @@ const Downbar = () => {
           <div className="flex items-center gap-3">
             {user && (
               <Link
-                href={'/dashboard'}
+                href={`/dashboard/${user?.role}`}
                 aria-label="Dashboard"
                 title="Dashboard"
                 className="flex h-10 w-11 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#00264a]"
