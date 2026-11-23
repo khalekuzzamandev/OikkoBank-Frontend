@@ -92,12 +92,7 @@ const sections: Section[] = [
       { name: "postOffice", label: "Post Office", placeholder: "Post office" },
       { name: "postCode", label: "Post Code", placeholder: "Post code" },
       { name: "village", label: "Village / Area", placeholder: "Village / Area" },
-      {
-        name: "address",
-        label: "House / Road / Detailed Address",
-        placeholder: "House number, road, block, etc.",
-        full: true,
-      },
+      { name: "address", label: "House / Road / Detailed Address", placeholder: "House number, road, block, etc.", full: true, },
     ],
   },
   {
@@ -143,6 +138,7 @@ const validate = (data: Record<string, FormDataEntryValue>) => {
         const file = data[f.name];
         if (!(file instanceof File) || file.size === 0) errors[f.name] = REQUIRED_MSG;
         else if (!file.type.startsWith("image/")) errors[f.name] = "Please upload an image file only";
+        else if (file.size > 2 * 1024 * 1024) errors[f.name] = "Photo size must be 2 MB or less";
         return;
       }
       if (!get(f.name)) errors[f.name] = REQUIRED_MSG;
@@ -186,6 +182,14 @@ const RegisterPage = () => {
   const [submitError, setSubmitError] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("Unable to read the photo."));
+      reader.readAsDataURL(file);
+    });
+
   const handleChange = (e: React.FormEvent<HTMLFormElement>) => {
     const target = e.target as HTMLInputElement;
     if (target.name && errors[target.name]) {
@@ -211,22 +215,31 @@ const RegisterPage = () => {
       return;
     }
 
-    const { photo, confirmPassword, name, email, password, ...rest } = data as Record<
+    const { photo, name, email, password, ...rest } = data as Record<
       string,
       FormDataEntryValue
     >;
 
-    const extra = Object.fromEntries(
-      Object.entries(rest).map(([k, v]) => [k, String(v).trim()])
-    );
-
     setLoading(true);
 
     try {
+      const photoFile = photo instanceof File ? photo : null;
+      if (!photoFile) {
+        setSubmitError("Please upload a photo.");
+        return;
+      }
+
+      const image = await fileToDataUrl(photoFile);
+      delete rest.confirmPassword;
+      const extra = Object.fromEntries(
+        Object.entries(rest).map(([key, value]) => [key, String(value).trim()])
+      );
+
       const res = await authClient.signUp.email({
         name: String(name).trim(),
         email: String(email).trim().toLowerCase(),
         password: String(password),
+        image,
         ...extra,
       } as Parameters<typeof authClient.signUp.email>[0]);
 
