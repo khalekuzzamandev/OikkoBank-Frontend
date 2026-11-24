@@ -15,11 +15,11 @@ import {
   LockKeyhole,
   Database,
   Info,
+  XCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import DeleteCustomer from "@/components/Layout/dashboard/staff/customer/DeleteCustomer";
 import EditCutomer from "@/components/Layout/dashboard/staff/customer/EditCutomer";
 
 import { selectUser } from "@/Redux/features/UserSlice";
@@ -370,7 +370,7 @@ function CustomerDetailsContent() {
 
   const id = params.id as string;
 
-  // Logged-in Staff Information from Redux
+  // Logged-in staff information
   const loggedInUser = useAppSelector(selectUser);
 
   const [customer, setCustomer] =
@@ -379,8 +379,11 @@ function CustomerDetailsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Fetch customer
   useEffect(() => {
     if (!id) return;
+
+    let isMounted = true;
 
     const fetchCustomer = async () => {
       try {
@@ -411,21 +414,31 @@ function CustomerDetailsContent() {
           throw new Error("Customer information not found.");
         }
 
-        setCustomer(customerData as CustomerData);
+        if (isMounted) {
+          setCustomer(customerData as CustomerData);
+        }
       } catch (err) {
         console.error("Customer fetch error:", err);
 
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Something went wrong."
-        );
+        if (isMounted) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Something went wrong."
+          );
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchCustomer();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   if (loading) {
@@ -485,15 +498,15 @@ function CustomerDetailsContent() {
       ? customer.status
       : "Unknown";
 
+  // Case-insensitive active status check
   const isActive =
-    customerStatus.toLowerCase() === "active";
+    customerStatus.trim().toLowerCase() === "active";
 
-  // Customer and Staff Information
   const customerId = String(customer._id || id);
   const staffEmail = String(loggedInUser?.email || "");
 
   return (
-    <div className="min-h-screen bg-gray-50 px-3 py-5 dark:bg-gray-950 sm:px-5 lg:px-8 mt-8 lg:mt-0">
+    <div className="mt-8 min-h-screen bg-gray-50 px-3 py-5 dark:bg-gray-950 lg:mt-0 sm:px-5 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-5">
 
         {/* Main Customer Information Card */}
@@ -524,24 +537,36 @@ function CustomerDetailsContent() {
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-2 rounded-md bg-white px-3 py-2">
 
+              {/* Edit button always visible */}
               <EditCutomer customerId={id} />
 
-              <DeleteCustomer customerId={id} />
+              {/* Approve and Reject only when NOT active */}
+              {!isActive && (
+                <>
+                 
 
-              {/* Approve Button */}
-              <Link
-                href={{
-                  pathname: `/dashboard/staff/customers/${id}/approved`,
-                  query: {
-                    customerId: customerId,
-                    customerEmail: customerEmail,
-                    staffEmail: staffEmail,
-                  },
-                }}
-                className="rounded-lg border border-white bg-[#003566] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#00264d]"
-              >
-                Approve
-              </Link>
+                  <Link
+                    href={`/dashboard/staff/customers/${id}/reject`}
+                    className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950"
+                  >
+                    <XCircle size={16} />
+                    Reject
+                  </Link>
+                  <Link
+                    href={{
+                      pathname: `/dashboard/staff/customers/${id}/approved`,
+                      query: {
+                        customerId,
+                        customerEmail,
+                        staffEmail,
+                      },
+                    }}
+                    className="rounded-lg border border-white bg-[#003566] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#00264d]"
+                  >
+                    Approve
+                  </Link>
+                </>
+              )}
 
             </div>
           </div>
@@ -620,7 +645,6 @@ function CustomerDetailsContent() {
               return (
                 <section key={section.title}>
 
-                  {/* Section Heading */}
                   <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-2.5 dark:border-gray-800">
 
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-400">
@@ -640,7 +664,6 @@ function CustomerDetailsContent() {
 
                   </div>
 
-                  {/* Three Column Form Fields */}
                   <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
 
                     {section.fields.map((field) => (
@@ -656,7 +679,6 @@ function CustomerDetailsContent() {
               );
             })}
 
-            {/* Empty State */}
             {sections.length === 0 && (
               <div className="rounded-xl border border-dashed border-gray-300 py-10 text-center dark:border-gray-700">
                 <Database className="mx-auto mb-2 h-8 w-8 text-gray-400" />
