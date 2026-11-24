@@ -1,20 +1,70 @@
+
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Button, Modal } from "@heroui/react";
-import { CircleX } from "lucide-react";
+import { CircleX, Loader2 } from "lucide-react";
 
-const DeleteCustomer = () => {
+import { deleteUser } from "@/components/lib/Apis/users/users";
+
+interface DeleteCustomerProps {
+  customerId: string;
+}
+
+const DeleteCustomer = ({ customerId }: DeleteCustomerProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleReject = () => {
-    setIsOpen(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!customerId) {
+      setError("Customer ID not found!");
+      return;
+    }
+
+    setIsDeleting(true);
+    setError("");
+
+    try {
+      const result = await deleteUser(customerId);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      setIsOpen(false);
+
+      alert("Customer deleted successfully!");
+
+      router.push("/dashboard/staff/customers");
+      router.refresh();
+
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete customer"
+      );
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
     <div>
-      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={(open) => {
+          if (!isDeleting) {
+            setIsOpen(open);
+            if (!open) setError("");
+          }
+        }}
+      >
         <Button
           variant="danger"
           onPress={() => setIsOpen(true)}
@@ -27,7 +77,6 @@ const DeleteCustomer = () => {
           variant="blur"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/65"
         >
-          {/* placement="center" এবং max-w-md (বা max-w-lg) ব্যবহার করা হয়েছে */}
           <Modal.Container
             placement="center"
             className="mx-auto flex w-full max-w-md items-center justify-center"
@@ -55,30 +104,37 @@ const DeleteCustomer = () => {
                 </Modal.Icon>
 
                 <Modal.Heading className="text-lg font-bold">
-                  Reject Customer Application?
+                  Delete Customer?
                 </Modal.Heading>
               </Modal.Header>
 
               {/* Body */}
-              <Modal.Body className="relative px-6 text-center">
+              <Modal.Body className="relative px-5 text-center sm:px-6">
                 <p className="text-sm leading-6 text-muted">
-                  Are you sure you want to reject this customer account
-                  creation application?
+                  Are you sure you want to delete this customer account?
                 </p>
 
                 <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/60 dark:bg-red-950/30">
                   <p className="text-xs leading-5 text-red-700 dark:text-red-300">
-                    Once rejected, this application will no longer be
-                    available to the customer.
+                    This action cannot be undone. The customer account
+                    will be permanently removed from the database.
                   </p>
                 </div>
+
+                {/* Error Message */}
+                {error && (
+                  <p className="mt-3 text-sm font-medium text-red-600">
+                    {error}
+                  </p>
+                )}
               </Modal.Body>
 
               {/* Footer */}
-              <Modal.Footer className="relative flex w-full gap-3 px-6 pb-6 pt-5">
+              <Modal.Footer className="relative flex w-full gap-3 px-5 pb-5 pt-5">
                 <Button
                   variant="secondary"
                   onPress={() => setIsOpen(false)}
+                  isDisabled={isDeleting}
                   className="flex-1 rounded-lg"
                 >
                   Cancel
@@ -86,10 +142,18 @@ const DeleteCustomer = () => {
 
                 <Button
                   variant="danger"
-                  onPress={handleReject}
+                  onPress={handleDelete}
+                  isDisabled={isDeleting}
                   className="flex-1 rounded-lg bg-red-600 font-semibold text-white hover:bg-red-700"
                 >
-                  Rejected
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
                 </Button>
               </Modal.Footer>
             </Modal.Dialog>

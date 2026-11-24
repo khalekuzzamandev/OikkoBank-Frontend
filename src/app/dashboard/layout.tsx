@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="">
+      <div className="w-0 lg:w-68">
         <Suspense fallback={null}>
           <DashboradSidebar />
         </Suspense>

@@ -13,4 +13,34 @@ const getAllUser = async () => {
 };
 export default getAllUser;
 
-// get unic user
+// Delete user
+export const deleteUser = async (customerId: string) => {
+  try {
+    const res = await fetch(`${baseURL}/api/users/${customerId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.message || "Failed to delete customer");
+    }
+
+    return {
+      success: true,
+      message: result.message || "Customer deleted successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong!",
+    };
+  }
+};

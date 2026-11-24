@@ -542,7 +542,7 @@ function CustomerDetailsContent() {
 
           {/* action btn */}
             <div className="flex flex-wrap items-center gap-2 bg-white py-2 px-3 rounded-md">
-            <DeleteCustomer/>
+            <DeleteCustomer customerId={id} />
 
               <button
                 type="button"
