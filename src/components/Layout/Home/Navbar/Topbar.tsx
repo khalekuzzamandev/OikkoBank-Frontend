@@ -53,13 +53,13 @@ const Topbar = () => {
 
           <span className="h-4 w-px bg-white/40" />
 
-          <Link href="#" className="transition hover:text-blue-300">
+          <Link href="/career" className="transition hover:text-blue-300">
             Careers
           </Link>
 
           <span className="h-4 w-px bg-white/40" />
 
-          <Link href="#" className="hidden transition hover:text-blue-300 sm:block">
+          <Link href="/investors" className="hidden transition hover:text-blue-300 sm:block">
             Investors Relation
           </Link>
         </div>
