@@ -61,7 +61,7 @@ const Downbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {user && (
+            {user?.status === "active" && (
               <Link
                 href={`/dashboard/${user?.role}`}
                 aria-label="Dashboard"
@@ -71,7 +71,6 @@ const Downbar = () => {
                 <LayoutDashboard size={21} />
               </Link>
             )}
-
             <button
               type="button"
               onClick={() => setSearchOpen(!searchOpen)}

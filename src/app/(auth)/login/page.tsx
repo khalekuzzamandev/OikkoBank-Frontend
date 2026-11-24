@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { setUser } from "@/Redux/features/UserSlice";
 import { useAppDispatch } from "@/Redux/hooks";
@@ -21,6 +22,7 @@ const LABEL_CLASS = "mb-1 block text-xs font-medium text-gray-700";
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -77,16 +79,31 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const { data: session, error } = await authClient.signIn.email({
+      const { data: session, error: signInError } = await authClient.signIn.email({
         email: data.email.trim(),
         password: data.password,
-        callbackURL: "/",
       });
 
-      if (error) {
-        setError(error.message || "Invalid email or password.");
+      if (signInError) {
+        setError(signInError.message || "Invalid email or password.");
       } else if (session?.user) {
         dispatch(setUser(session.user));
+
+        const status = session.user.status?.toLowerCase();
+        if (status === "pending") {
+          router.replace("/underReview");
+        } else if (status === "active") {
+          const role = session.user.role?.toLowerCase();
+          if (role && ["admin", "staff", "customer"].includes(role)) {
+            router.replace(`/dashboard/${role}`);
+          } else {
+            setError("Your account role could not be determined. Please contact support.");
+          }
+        } else {
+          setError("Your account status could not be determined. Please contact support.");
+        }
+      } else {
+        setError("Unable to retrieve your account details. Please try again.");
       }
     } catch {
       setError("Something went wrong. Please try again.");
