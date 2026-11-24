@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import DeleteCustomer from "@/components/Layout/dashboard/staff/customer/DeleteCustomer";
+import EditCutomer from "@/components/Layout/dashboard/staff/customer/EditCutomer";
 
 type CustomerData = Record<string, unknown>;
 
@@ -97,6 +98,7 @@ const SECTION_CONFIG = [
       "employee",
       "business",
       "work",
+      "status",
     ],
   },
   {
@@ -112,23 +114,10 @@ const SECTION_CONFIG = [
       "limit",
       "fee",
       "money",
+   
     ],
   },
-  {
-    title: "Account Information",
-    icon: CreditCard,
-    keywords: [
-      "account",
-      "role",
-      "status",
-      "customerid",
-      "userid",
-      "accountid",
-      "accounttype",
-      "verified",
-      "kyc",
-    ],
-  },
+ 
   {
     title: "Security Information",
     icon: LockKeyhole,
@@ -142,18 +131,7 @@ const SECTION_CONFIG = [
       "blocked",
     ],
   },
-  {
-    title: "Registration Information",
-    icon: CalendarDays,
-    keywords: [
-      "created",
-      "updated",
-      "registered",
-      "registration",
-      "lastactivity",
-      "timestamp",
-    ],
-  },
+  
 ];
 
 function formatLabel(key: string): string {
@@ -540,18 +518,12 @@ function CustomerDetailsContent() {
               </div>
             </div>
 
-          {/* action btn */}
+            {/* action btn */}
             <div className="flex flex-wrap items-center gap-2 bg-white py-2 px-3 rounded-md">
-            <DeleteCustomer customerId={id} />
+              <EditCutomer customerId={id} />
+              <DeleteCustomer customerId={id} />
 
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-300 dark:hover:bg-gray-800"
-              >
-                <Edit size={16} />
-                Edit
-              </button>
+
 
               <button
                 type="button"
@@ -615,8 +587,8 @@ function CustomerDetailsContent() {
             {/* Customer Status */}
             <div
               className={`inline-flex w-fit shrink-0 self-start items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold sm:self-center ${isActive
-                  ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
-                  : "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                : "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 }`}
             >
               <span

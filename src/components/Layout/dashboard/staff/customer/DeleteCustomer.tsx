@@ -70,7 +70,7 @@ const DeleteCustomer = ({ customerId }: DeleteCustomerProps) => {
           onPress={() => setIsOpen(true)}
           className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-200 dark:border-red-900 dark:hover:bg-red-950"
         >
-          Delete
+          Reject
         </Button>
 
         <Modal.Backdrop
@@ -104,7 +104,7 @@ const DeleteCustomer = ({ customerId }: DeleteCustomerProps) => {
                 </Modal.Icon>
 
                 <Modal.Heading className="text-lg font-bold">
-                  Delete Customer?
+                  Reject Customer Account Application?
                 </Modal.Heading>
               </Modal.Header>
 
