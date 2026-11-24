@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import DashboardNavbar from "@/components/Layout/dashboard/DashboardNavbar";
-import DashboradSidebar from "@/components/Layout/dashboard/DashboradSidebar";
+import DashboardNavbar from "@/components/Layout/dashboard/ui/DashboardNavbar";
+import DashboradSidebar from "@/components/Layout/dashboard/ui/DashboradSidebar";
 
 export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
@@ -27,5 +27,5 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
         </main>
       </div>
     </div>
-    )
+  )
 }

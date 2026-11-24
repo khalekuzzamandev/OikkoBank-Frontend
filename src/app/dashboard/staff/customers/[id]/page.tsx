@@ -20,6 +20,7 @@ import {
   Edit,
 } from "lucide-react";
 import Image from "next/image";
+import DeleteCustomer from "@/components/Layout/dashboard/staff/customer/DeleteCustomer";
 
 type CustomerData = Record<string, unknown>;
 
@@ -541,12 +542,7 @@ function CustomerDetailsContent() {
 
           {/* action btn */}
             <div className="flex flex-wrap items-center gap-2 bg-white py-2 px-3 rounded-md">
-              <button
-                type="button"
-                className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
-              >
-                Delete
-              </button>
+            <DeleteCustomer/>
 
               <button
                 type="button"

@@ -125,7 +125,7 @@ const DashboardSidebar = () => {
 
     return pathname === href || pathname.startsWith(`${href}/`);
   };
-  
+
   return (
     <>
       {/* Mobile Header */}
@@ -279,7 +279,7 @@ const DashboardSidebar = () => {
 
         {/* User Profile */}
         <div className="shrink-0 border-t border-white/10 pt-4">
-         <Profile/>
+          <Profile />
         </div>
       </aside>
 
