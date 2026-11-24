@@ -15,19 +15,19 @@ const Topbar = () => {
         {/* Left Side */}
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-4 text-[17px]">
-            <Link href="#" aria-label="Facebook" className="transition hover:text-blue-400">
+            <Link href="https://www.facebook.com/khalekuzzamanMurad" target="_blank" aria-label="Facebook" className="transition hover:text-blue-400">
               <FaFacebookF />
             </Link>
 
-            <Link href="#" aria-label="Instagram" className="transition hover:text-pink-400">
+            <Link href="https://www.instagram.com/khalekuzzamandev/" target="_blank" aria-label="Instagram" className="transition hover:text-pink-400">
               <FaInstagram />
             </Link>
 
-            <Link href="#" aria-label="LinkedIn" className="transition hover:text-blue-400">
+            <Link href="https://www.linkedin.com/in/khalekuzzamandev/" target="_blank" aria-label="LinkedIn" className="transition hover:text-blue-400">
               <FaLinkedinIn />
             </Link>
 
-            <Link href="#" aria-label="YouTube" className="transition hover:text-red-400">
+            <Link href="https://www.youtube.com/" aria-label="YouTube" target="_blank" className="transition hover:text-red-400">
               <FaYoutube />
             </Link>
           </div>
