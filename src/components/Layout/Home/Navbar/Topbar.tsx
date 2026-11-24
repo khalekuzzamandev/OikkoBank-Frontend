@@ -41,13 +41,13 @@ const Topbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center gap-3 text-[12px] font-medium sm:gap-4 sm:text-[13px]">
-          <Link href="#" className="transition hover:text-blue-300">
+          <Link href="/help-center" className="transition hover:text-blue-300">
             Help Center
           </Link>
 
           <span className="h-4 w-px bg-white/40" />
 
-          <Link href="#" className="transition hover:text-blue-300">
+          <Link href="/contact" className="transition hover:text-blue-300">
             Contact
           </Link>
 

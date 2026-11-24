@@ -1,9 +1,10 @@
+import Contact from '@/components/Layout/Home/Contact';
 import React from 'react';
 
 const ContactPage = () => {
   return (
     <div>
-      contact page
+      <Contact/>
     </div>
   );
 };
