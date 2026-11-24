@@ -6,7 +6,6 @@ export interface BankAccount {
   _id?: string;
   userId: string;
   userEmail: string;
-  staffId: string;
   staffEmail: string;
   accountNumber: string;
   accountName: string;

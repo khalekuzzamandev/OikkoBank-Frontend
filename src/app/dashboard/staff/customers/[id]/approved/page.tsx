@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   UserRound,
   Wallet,
@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   RefreshCw,
 } from "lucide-react";
+import { createCustomerBankAccount } from "@/components/lib/Apis/accounts/account";
 
 const generateAccountNumber = () => {
   return String(
@@ -29,7 +30,7 @@ const labelClass =
 
 function ApprovedContent() {
   const searchParams = useSearchParams();
-
+  const router = useRouter();
   const customerId = searchParams.get("customerId") || "";
   const customerEmail = searchParams.get("customerEmail") || "";
   const staffEmail = searchParams.get("staffEmail") || "";
@@ -49,17 +50,43 @@ function ApprovedContent() {
     e.preventDefault();
 
     if (!accountNumber) {
-      alert("Account number is not generated yet!");
+      alert("Account number is not generated!");
       return;
     }
 
     const formData = new FormData(e.currentTarget);
-    const accountData = Object.fromEntries(formData.entries());
+
+    const accountData = {
+      userId: String(formData.get("userId")),
+      userEmail: String(formData.get("userEmail")),
+      staffEmail: String(formData.get("staffEmail")),
+      accountNumber: String(formData.get("accountNumber")),
+      accountName: String(formData.get("accountName")),
+      accountType: String(formData.get("accountType")),
+      currency: String(formData.get("currency")),
+      status: String(formData.get("status")),
+      accountPurpose: String(formData.get("accountPurpose") || ""),
+
+      balance: Number(formData.get("balance")),
+      minimumBalance: Number(formData.get("minimumBalance")),
+      dailyTransferLimit: Number(formData.get("dailyTransferLimit")),
+      monthlyTransferLimit: Number(formData.get("monthlyTransferLimit")),
+      interestRate: Number(formData.get("interestRate")),
+
+      branch: String(formData.get("branch")),
+    };
 
     setLoading(true);
 
     try {
-      console.log("Account Form Data:", accountData);
+      const result = await createCustomerBankAccount(accountData);
+
+      if (result.success) {
+        alert("Bank account created successfully!");
+        router.push("/dashboard/staff/customers/");
+      } else {
+        alert(result.message || "Account creation failed!");
+      }
     } catch (error) {
       console.error("Account creation error:", error);
       alert("Something went wrong!");
@@ -345,7 +372,7 @@ function ApprovedContent() {
               className="flex items-center justify-center gap-2 rounded-lg bg-[#003566] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00264a] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <CheckCircle2 size={18} />
-              {loading ? "Processing..." : "Create Bank Account"}
+              {loading ? "Creating Account..." : "Create Bank Account"}
             </button>
           </div>
         </form>
