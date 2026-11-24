@@ -306,8 +306,8 @@ const EditCutomer = ({ customerId }: EditCustomerProps) => {
                         className={inputClass}
                       >
 
-                        <option value="Pending">Inactive</option>
-                        <option value="Active">Active</option>
+                          <option value="pending">Pending</option>
+                        <option value="active">Active</option>
 
                       </select>
                     </div>

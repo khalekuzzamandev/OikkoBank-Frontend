@@ -8,8 +8,6 @@ import {
   UserRound,
   Mail,
   ShieldCheck,
-  CreditCard,
-  CalendarDays,
   MapPin,
   Loader2,
   BriefcaseBusiness,
@@ -17,11 +15,15 @@ import {
   LockKeyhole,
   Database,
   Info,
-  Edit,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+
 import DeleteCustomer from "@/components/Layout/dashboard/staff/customer/DeleteCustomer";
 import EditCutomer from "@/components/Layout/dashboard/staff/customer/EditCutomer";
+
+import { selectUser } from "@/Redux/features/UserSlice";
+import { useAppSelector } from "@/Redux/hooks";
 
 type CustomerData = Record<string, unknown>;
 
@@ -114,10 +116,8 @@ const SECTION_CONFIG = [
       "limit",
       "fee",
       "money",
-   
     ],
   },
- 
   {
     title: "Security Information",
     icon: LockKeyhole,
@@ -131,7 +131,6 @@ const SECTION_CONFIG = [
       "blocked",
     ],
   },
-  
 ];
 
 function formatLabel(key: string): string {
@@ -190,9 +189,7 @@ function formatValue(value: unknown, key = ""): string {
   }
 
   if (typeof value === "string") {
-    if (
-      /date|createdat|updatedat|lastlogin|timestamp/i.test(key)
-    ) {
+    if (/date|createdat|updatedat|lastlogin|timestamp/i.test(key)) {
       const date = new Date(value);
 
       if (!Number.isNaN(date.getTime())) {
@@ -289,12 +286,10 @@ function getSectionIndex(key: string): number {
     const config = SECTION_CONFIG[i];
 
     if (
-      config.keywords.some((keyword) => {
-        return (
-          normalized === keyword ||
-          normalized.startsWith(keyword)
-        );
-      })
+      config.keywords.some((keyword) =>
+        normalized === keyword ||
+        normalized.startsWith(keyword)
+      )
     ) {
       return i;
     }
@@ -374,6 +369,9 @@ function CustomerDetailsContent() {
   const router = useRouter();
 
   const id = params.id as string;
+
+  // Logged-in Staff Information from Redux
+  const loggedInUser = useAppSelector(selectUser);
 
   const [customer, setCustomer] =
     useState<CustomerData | null>(null);
@@ -490,14 +488,19 @@ function CustomerDetailsContent() {
   const isActive =
     customerStatus.toLowerCase() === "active";
 
+  // Customer and Staff Information
+  const customerId = String(customer._id || id);
+  const staffEmail = String(loggedInUser?.email || "");
+
   return (
-    <div className="min-h-screen bg-gray-50 px-3 py-5 dark:bg-gray-950 sm:px-5 lg:px-8  mt-8 lg:mt-0">
+    <div className="min-h-screen bg-gray-50 px-3 py-5 dark:bg-gray-950 sm:px-5 lg:px-8 mt-8 lg:mt-0">
       <div className="mx-auto max-w-7xl space-y-5">
 
         {/* Main Customer Information Card */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+
           {/* Page Header */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#003566] p-5 rounded-md">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md bg-[#003566] p-5">
 
             <div className="flex items-center gap-3">
               <button
@@ -512,32 +515,40 @@ function CustomerDetailsContent() {
                   Customer Details
                 </h1>
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-300">
                   View complete customer information
                 </p>
               </div>
             </div>
 
-            {/* action btn */}
-            <div className="flex flex-wrap items-center gap-2 bg-white py-2 px-3 rounded-md">
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2 rounded-md bg-white px-3 py-2">
+
               <EditCutomer customerId={id} />
+
               <DeleteCustomer customerId={id} />
 
-
-
-              <button
-                type="button"
-                className="rounded-lg bg-[#003566] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#00264d] border border-white"
+              {/* Approve Button */}
+              <Link
+                href={{
+                  pathname: `/dashboard/staff/customers/${id}/approved`,
+                  query: {
+                    customerId: customerId,
+                    customerEmail: customerEmail,
+                    staffEmail: staffEmail,
+                  },
+                }}
+                className="rounded-lg border border-white bg-[#003566] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#00264d]"
               >
                 Approve
-              </button>
+              </Link>
 
             </div>
           </div>
+
           {/* Customer Profile Header */}
           <div className="flex flex-col justify-between gap-4 border-b border-gray-200 bg-gradient-to-r from-cyan-50 to-white px-5 py-5 dark:border-gray-800 dark:from-cyan-950/30 dark:to-gray-950 sm:flex-row sm:items-center sm:px-6">
 
-            {/* Customer Information */}
             <div className="flex min-w-0 flex-wrap items-center gap-4">
 
               <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
@@ -576,7 +587,7 @@ function CustomerDetailsContent() {
                   </span>
 
                   <span className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                    ID: {String(customer._id || id)}
+                    ID: {customerId}
                   </span>
 
                 </div>
@@ -587,8 +598,8 @@ function CustomerDetailsContent() {
             {/* Customer Status */}
             <div
               className={`inline-flex w-fit shrink-0 self-start items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold sm:self-center ${isActive
-                ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
-                : "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                  ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                  : "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 }`}
             >
               <span
@@ -657,7 +668,6 @@ function CustomerDetailsContent() {
             )}
 
           </div>
-
         </div>
 
         {/* Footer */}
