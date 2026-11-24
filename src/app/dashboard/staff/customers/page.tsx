@@ -5,13 +5,12 @@ import { useEffect, useState } from "react";
 import getAllUser from "@/components/lib/Apis/users/users";
 import {
   Search,
-  Eye,
-  MoreHorizontal,
   Users,
   UserCheck,
   Clock,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Customer {
   _id: string;
@@ -295,26 +294,14 @@ const Page = () => {
                       </td>
 
                       {/* Action */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            type="button"
-                            title="View customer"
-                            className="rounded-lg p-2 text-[#003b68] transition hover:bg-blue-50"
-                          >
-                            <Eye size={18} />
-                          </button>
-
-                          <button
-                            type="button"
-                            title="More options"
-                            className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100"
-                          >
-                            <MoreHorizontal size={19} />
-                          </button>
-                        </div>
+                      <td className="px-5 py-4 text-center">
+                        <Link
+                          href={`/dashboard/staff/customers/${item._id}`}
+                          className="inline-flex items-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-[#003b68] hover:bg-gray-50 hover:text-[#003b68]"
+                        >
+                          Action
+                        </Link>
                       </td>
-
                     </tr>
                   ))
                 ) : (

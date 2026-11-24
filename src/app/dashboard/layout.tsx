@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import DashboardNavbar from "@/components/Layout/dashboard/DashboardNavbar";
 import DashboradSidebar from "@/components/Layout/dashboard/DashboradSidebar";
 
@@ -6,14 +7,18 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <div className="">
-        <DashboradSidebar />
+        <Suspense fallback={null}>
+          <DashboradSidebar />
+        </Suspense>
       </div>
 
       {/* Right Section */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Navbar */}
         <div className="">
-         <DashboardNavbar/>
+          <Suspense fallback={null}>
+            <DashboardNavbar />
+          </Suspense>
         </div>
 
         {/* Scrollable Content */}

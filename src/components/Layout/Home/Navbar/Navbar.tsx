@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import {
   Menu,
@@ -23,14 +23,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { selectUser } from "@/Redux/features/UserSlice";
 import { useSelector } from "react-redux";
 
-const Navbar = () => {
+const NavbarContent = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+
   const user = useSelector(selectUser);
-  
-  // dashboard er jonno nav hide
-  const pathname = usePathname();
+
+  // Dashboard pages hide Navbar
   if (pathname?.startsWith("/dashboard")) {
     return null;
   }
@@ -59,14 +61,15 @@ const Navbar = () => {
     }
   };
 
-
   return (
     <header className="sticky top-0 z-50 w-full bg-white">
+      {/* Desktop Navbar */}
       <div className="hidden lg:block">
         <Topbar />
         <Downbar />
       </div>
-      {/* mobile responsives */}
+
+      {/* Mobile Navbar */}
       <div className="relative lg:hidden">
         <div className="flex h-[68px] items-center justify-between bg-white px-4 shadow-sm sm:px-5">
           <div className="flex min-w-0 items-center">
@@ -82,9 +85,9 @@ const Navbar = () => {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {user && (
+            {user?.status === "active" && (
               <Link
-                href={'/dashboard'}
+                href={`/dashboard/${user.role}`}
                 aria-label="Dashboard"
                 title="Dashboard"
                 onClick={closeMenu}
@@ -106,6 +109,7 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Mobile Dropdown */}
         {menuOpen && (
           <div className="absolute left-0 top-full z-50 max-h-[calc(100dvh-68px)] w-full overflow-y-auto bg-white shadow-xl">
             <div className="bg-[#003566] px-5 py-5 text-white">
@@ -132,6 +136,7 @@ const Navbar = () => {
               </div>
             </div>
 
+            {/* Search */}
             <div className="border-b border-gray-100 p-5">
               <form
                 onSubmit={handleSearch}
@@ -153,6 +158,7 @@ const Navbar = () => {
               </form>
             </div>
 
+            {/* Navigation Links */}
             <div className="px-5 py-3">
               <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-widest text-gray-400">
                 Main Navigation
@@ -171,6 +177,7 @@ const Navbar = () => {
               ))}
             </div>
 
+            {/* Footer */}
             <div className="bg-[#F3F6FA] px-6 py-5">
               <p className="text-center text-xs text-gray-500">
                 © 2026 Oikko Bank. All Rights Reserved.
@@ -180,6 +187,14 @@ const Navbar = () => {
         )}
       </div>
     </header>
+  );
+};
+
+const Navbar = () => {
+  return (
+    <Suspense fallback={null}>
+      <NavbarContent />
+    </Suspense>
   );
 };
 
