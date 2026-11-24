@@ -12,11 +12,6 @@ const ApprovedContent = () => {
   const staffId = searchParams.get("staffId");
   const staffEmail = searchParams.get("staffEmail");
 
-  console.log("Customer ID:", customerId);
-  console.log("Customer Email:", customerEmail);
-
-  console.log("Staff ID:", staffId);
-  console.log("Staff Email:", staffEmail);
 
   return (
     <div className="p-6">
