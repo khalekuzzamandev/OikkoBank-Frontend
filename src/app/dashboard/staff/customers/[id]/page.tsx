@@ -512,10 +512,8 @@ function CustomerDetailsContent() {
     customerStatus.toLowerCase() === "active";
 
   return (
-    <div className="min-h-screen bg-gray-50 px-3 py-5 dark:bg-gray-950 sm:px-5 lg:px-8">
+    <div className="min-h-screen bg-gray-50 px-3 py-5 dark:bg-gray-950 sm:px-5 lg:px-8  mt-8 lg:mt-0">
       <div className="mx-auto max-w-7xl space-y-5">
-
-      
 
         {/* Main Customer Information Card */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
@@ -542,7 +540,7 @@ function CustomerDetailsContent() {
             </div>
 
           {/* action btn */}
-            <div className="flex flex-wrap items-center gap-2 bg-white p-2 rounded-md">
+            <div className="flex flex-wrap items-center gap-2 bg-white py-2 px-3 rounded-md">
               <button
                 type="button"
                 className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
