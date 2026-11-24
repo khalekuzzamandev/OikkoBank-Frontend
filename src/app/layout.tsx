@@ -1,13 +1,12 @@
-
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Arimo, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Layout/Home/Navbar/Navbar";
 import Footer from "@/components/Layout/Home/Footer";
 import Providers from "./providers";
 
-const geistSans = Geist({
+const arimo = Arimo({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -41,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${arimo.className} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>
