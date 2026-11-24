@@ -360,7 +360,7 @@ export default function StaffOverviewPage() {
   ];
 
   return (
-    <div className="min-h-full bg-[#f3f6fb] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-full bg-[#f3f6fb] p-4 sm:p-5 lg:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#003566] via-[#075985] to-[#0e7490] p-6 text-white shadow-lg sm:p-8">
           <div className="absolute -right-10 -top-20 h-64 w-64 rounded-full border-[35px] border-white/5" />

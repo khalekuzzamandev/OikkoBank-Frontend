@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-0 lg:w-68">
+      <div className="w-0 lg:w-68 border-r[#003566] bg-[#003566]">
         <Suspense fallback={null}>
           <DashboradSidebar />
         </Suspense>
@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
         </div>
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-5">
+        <main className="flex-1 overflow-y-auto p-0">
           {children}
         </main>
       </div>

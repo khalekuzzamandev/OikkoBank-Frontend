@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { selectUser } from "@/Redux/features/UserSlice";
 import { useAppSelector } from "@/Redux/hooks";
+import { useSession } from "@/components/lib/auth-client";
 
 import {
   LayoutDashboard,
@@ -69,13 +70,79 @@ const DashboardItem = {
   ],
 };
 
+const SidebarLoadingSkeleton = () => (
+  <>
+    <header
+      aria-hidden="true"
+      className="fixed left-0 top-0 z-40 flex h-16 w-full items-center justify-between border-b border-white/10 bg-[#003566] px-4 lg:hidden"
+    >
+      <div className="flex items-center gap-2.5">
+        <div className="h-9 w-9 animate-pulse rounded-xl bg-white/15" />
+        <div className="space-y-2">
+          <div className="h-3 w-24 animate-pulse rounded bg-white/20" />
+          <div className="h-2 w-20 animate-pulse rounded bg-white/10" />
+        </div>
+      </div>
+      <div className="h-10 w-10 animate-pulse rounded-lg bg-white/10" />
+    </header>
+
+    <div className="h-16 shrink-0 lg:hidden" />
+
+    <aside
+      aria-label="Loading dashboard sidebar"
+      aria-busy="true"
+      className="fixed left-0 top-0 z-50 flex h-dvh w-[280px] max-w-[85vw] -translate-x-full flex-col border-r border-white/10 bg-[#003566] px-4 py-5 text-white shadow-xl lg:sticky lg:top-0 lg:h-screen lg:w-[280px] lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:shadow-none"
+    >
+      <div className="flex shrink-0 items-center gap-3 border-b border-white/10 py-4">
+        <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-white/15" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-28 animate-pulse rounded bg-white/20" />
+          <div className="h-2.5 w-24 animate-pulse rounded bg-white/10" />
+        </div>
+      </div>
+
+      <nav
+        aria-label="Loading navigation items"
+        className="flex-1 space-y-1 overflow-hidden py-5"
+      >
+        <div className="mb-4 h-2.5 w-20 animate-pulse rounded bg-white/10" />
+        {Array.from({ length: 8 }, (_, index) => (
+          <div
+            key={index}
+            className="flex h-11 animate-pulse items-center gap-3 rounded-lg border border-white/5 bg-white/[0.06] px-3"
+          >
+            <div className="h-5 w-5 shrink-0 rounded-md bg-white/15" />
+            <div
+              className="h-3 rounded bg-white/15"
+              style={{ width: `${92 + (index % 3) * 18}px` }}
+            />
+          </div>
+        ))}
+      </nav>
+
+      <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/10 p-3">
+        <div className="h-11 w-11 shrink-0 animate-pulse rounded-full bg-white/15" />
+        <div className="flex-1 space-y-2">
+          <div className="h-3 w-24 animate-pulse rounded bg-white/20" />
+          <div className="h-2.5 w-32 animate-pulse rounded bg-white/10" />
+        </div>
+      </div>
+    </aside>
+
+    <span className="sr-only" role="status">
+      Loading dashboard navigation
+    </span>
+  </>
+);
+
 const DashboardSidebar = () => {
   const user = useAppSelector(selectUser);
+  const { data: session, isPending } = useSession();
   const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const role = user?.role?.toLowerCase() as
+  const role = (user?.role ?? session?.user?.role)?.toLowerCase() as
     | keyof typeof DashboardItem
     | undefined;
 
@@ -105,6 +172,7 @@ const DashboardSidebar = () => {
     };
   }, []);
 
+  if (isPending) return <SidebarLoadingSkeleton />;
   if (!user || !menuItems) return null;
 
   const initials = (user.name || "U")
