@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
         </div>
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-0">
+        <main className="flex-1 overflow-y-auto p-0 m-5 mt-20 lg:mt-2">
           {children}
         </main>
       </div>

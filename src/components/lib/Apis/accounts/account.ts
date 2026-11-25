@@ -107,3 +107,23 @@ export const updateCustomerBankAccount = async (
     };
   }
 };
+
+
+// get account by-userId
+export const getCustomerBankAccountByUserId = async (id: string) => {
+  try {
+    const res = await fetch(`${baseURL}/api/accounts/user/${id}`, {
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Account not found");
+
+    return data;
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong",
+    };
+  }
+};
