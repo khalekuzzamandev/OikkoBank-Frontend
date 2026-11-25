@@ -1,6 +1,8 @@
+
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+
 const MONGODB_URL = process.env.MONGODB_URL;
 
 if (!MONGODB_URL) {
@@ -11,6 +13,13 @@ const client = new MongoClient(MONGODB_URL);
 const db = client.db("oikko-bank");
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
+
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://oikko-bank-frontend.vercel.app",
+  ],
+
   database: mongodbAdapter(db, {
     client,
   }),
@@ -21,11 +30,22 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      // extra filed
-      role:{type:"string",defaultValue:"customer"},
-      isBlocked:{type:"boolean",defaultValue:false},
-      status:{type:"string",defaultValue:"pending"},
-      isverified:{type:"boolean",defaultValue:false},
+      role: {
+        type: "string",
+        defaultValue: "customer",
+      },
+      isBlocked: {
+        type: "boolean",
+        defaultValue: false,
+      },
+      status: {
+        type: "string",
+        defaultValue: "pending",
+      },
+      isverified: {
+        type: "boolean",
+        defaultValue: false,
+      },
 
       fatherName: { type: "string", required: true },
       motherName: { type: "string", required: true },
