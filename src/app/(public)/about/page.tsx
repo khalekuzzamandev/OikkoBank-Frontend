@@ -4,13 +4,9 @@ import {
   Landmark,
   ShieldCheck,
   Users,
-  Target,
-  Eye,
-  HeartHandshake,
   Wallet,
   Globe,
   TrendingUp,
-  BadgeCheck,
   ArrowRight,
   Building2,
   HandCoins,
@@ -18,33 +14,6 @@ import {
 } from "lucide-react";
 
 const AboutPage = () => {
-  const values = [
-    {
-      icon: ShieldCheck,
-      title: "Trust & Security",
-      description:
-        "We prioritize the safety of your money and personal information through secure banking practices.",
-    },
-    {
-      icon: HeartHandshake,
-      title: "Customer First",
-      description:
-        "Our customers are at the heart of everything we do. We aim to deliver reliable and friendly service.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Innovation",
-      description:
-        "We embrace modern technology to make banking simpler, faster, and more accessible.",
-    },
-    {
-      icon: BadgeCheck,
-      title: "Transparency",
-      description:
-        "We believe in honest communication, transparent services, and responsible financial management.",
-    },
-  ];
-
   const services = [
     {
       icon: Wallet,
@@ -80,19 +49,19 @@ const AboutPage = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#003566] px-5 py-16 text-white sm:px-8 lg:py-24">
-        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-blue-400/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold tracking-wider text-blue-100">
-              <Landmark size={15} className="text-orange-400" />
+              <Landmark size={15} className="text-white" />
               ABOUT OIKKO BANK
             </div>
 
             <h1 className="max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
               Banking Together,
-              <span className="block text-orange-400">
+              <span className="block text-white">
                 Growing Together.
               </span>
             </h1>
@@ -107,33 +76,35 @@ const AboutPage = () => {
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#our-story"
-                className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-orange-600"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-bold text-[#003566] transition hover:bg-slate-200"
               >
                 Discover Our Story
                 <ArrowRight size={17} />
               </a>
 
               <a
-                href="#our-values"
+                href="#banking-services"
                 className="rounded-lg border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
               >
-                Our Values
+                Our Services
               </a>
             </div>
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-4 rounded-3xl bg-orange-400/10 blur-2xl" />
+            <div className="absolute -inset-4 rounded-3xl bg-white/10 blur-2xl" />
 
             <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-3 shadow-2xl backdrop-blur">
               <div className="flex aspect-[5/4] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#0a548f] to-[#001e40]">
                 <div className="relative text-center">
                   <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-3xl border border-white/20 bg-white/10 shadow-2xl">
-                    <Landmark size={64} className="text-orange-400" />
+                    <Landmark size={64} className="text-white" />
                   </div>
+
                   <h2 className="mt-6 text-3xl font-black tracking-widest">
                     OIKKO BANK
                   </h2>
+
                   <p className="mt-2 text-sm tracking-[0.3em] text-blue-100/70">
                     YOUR TRUSTED PARTNER
                   </p>
@@ -143,9 +114,10 @@ const AboutPage = () => {
 
             <div className="absolute -bottom-5 -left-5 hidden rounded-xl border border-white/10 bg-white p-4 text-[#003566] shadow-xl sm:block">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-orange-100 p-2">
-                  <ShieldCheck className="text-orange-600" size={24} />
+                <div className="rounded-lg bg-slate-100 p-2">
+                  <ShieldCheck className="text-[#003566]" size={24} />
                 </div>
+
                 <div>
                   <p className="text-sm font-bold">Banking with Trust</p>
                   <p className="text-xs text-slate-500">
@@ -170,6 +142,7 @@ const AboutPage = () => {
               <h3 className="text-2xl font-extrabold text-[#003566] sm:text-3xl">
                 {stat.value}
               </h3>
+
               <p className="mt-2 text-xs font-medium text-slate-500 sm:text-sm">
                 {stat.label}
               </p>
@@ -179,11 +152,14 @@ const AboutPage = () => {
       </section>
 
       {/* Our Story */}
-      <section id="our-story" className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
+      <section
+        id="our-story"
+        className="mx-auto max-w-7xl px-5 py-20 sm:px-8"
+      >
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div className="relative">
             <div className="rounded-3xl bg-[#003566] p-8 text-white sm:p-12">
-              <Building2 size={45} className="text-orange-400" />
+              <Building2 size={45} className="text-white" />
 
               <h3 className="mt-6 text-3xl font-bold">
                 Building a Better Financial Future
@@ -195,12 +171,12 @@ const AboutPage = () => {
                 banking services.
               </p>
 
-              <div className="mt-8 h-1.5 w-20 rounded-full bg-orange-500" />
+              <div className="mt-8 h-1.5 w-20 rounded-full bg-white" />
             </div>
           </div>
 
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#003566]">
               Who We Are
             </span>
 
@@ -222,13 +198,15 @@ const AboutPage = () => {
             </p>
 
             <div className="mt-8 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100">
-                <Users size={24} className="text-orange-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
+                <Users size={24} className="text-[#003566]" />
               </div>
+
               <div>
                 <h4 className="font-bold text-[#003566]">
                   People-Centered Banking
                 </h4>
+
                 <p className="mt-1 text-xs text-slate-500">
                   Banking designed around your needs.
                 </p>
@@ -238,106 +216,14 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Mission Vision */}
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="mx-auto mb-12 max-w-2xl text-center">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">
-              Our Purpose
-            </span>
-            <h2 className="mt-3 text-3xl font-extrabold text-[#003566] sm:text-4xl">
-              Mission & Vision
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-slate-500">
-              Our direction is guided by a commitment to better banking
-              and a stronger financial future.
-            </p>
-          </div>
-
-          <div className="grid gap-7 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-100 bg-slate-50 p-8 transition hover:-translate-y-1 hover:shadow-xl">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#003566] text-orange-400">
-                <Target size={28} />
-              </div>
-
-              <h3 className="mt-6 text-2xl font-bold text-[#003566]">
-                Our Mission
-              </h3>
-
-              <p className="mt-4 text-sm leading-7 text-slate-600">
-                To provide secure, accessible, and customer-focused
-                financial services through innovation, integrity, and
-                a commitment to excellence.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-slate-50 p-8 transition hover:-translate-y-1 hover:shadow-xl">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500 text-white">
-                <Eye size={28} />
-              </div>
-
-              <h3 className="mt-6 text-2xl font-bold text-[#003566]">
-                Our Vision
-              </h3>
-
-              <p className="mt-4 text-sm leading-7 text-slate-600">
-                To become a trusted and innovative banking partner
-                that empowers communities and creates sustainable
-                financial opportunities for everyone.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section id="our-values" className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
-        <div className="mb-12 text-center">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">
-            What We Believe
-          </span>
-
-          <h2 className="mt-3 text-3xl font-extrabold text-[#003566] sm:text-4xl">
-            Our Core Values
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-500">
-            The principles that shape our services, relationships,
-            and commitment to our customers.
-          </p>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {values.map((value) => {
-            const Icon = value.icon;
-
-            return (
-              <div
-                key={value.title}
-                className="group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-2 hover:border-orange-200 hover:shadow-xl"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition group-hover:bg-[#003566] group-hover:text-orange-400">
-                  <Icon size={27} />
-                </div>
-
-                <h3 className="mt-6 text-lg font-bold text-[#003566]">
-                  {value.title}
-                </h3>
-
-                <p className="mt-3 text-sm leading-7 text-slate-500">
-                  {value.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
       {/* Banking Services */}
-      <section className="bg-slate-100 py-20">
+      <section
+        id="banking-services"
+        className="bg-slate-100 py-20"
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div className="mb-12">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#003566]">
               What We Offer
             </span>
 
@@ -360,7 +246,7 @@ const AboutPage = () => {
                   key={service.title}
                   className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#003566] text-orange-400">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#003566] text-white">
                     <Icon size={24} />
                   </div>
 
@@ -381,10 +267,10 @@ const AboutPage = () => {
       {/* Final CTA */}
       <section className="px-5 py-16 sm:px-8">
         <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-[#003566] px-6 py-14 text-center text-white sm:px-12">
-          <div className="absolute -right-16 -top-20 h-60 w-60 rounded-full bg-orange-500/10 blur-3xl" />
+          <div className="absolute -right-16 -top-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
 
           <div className="relative">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-orange-400">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-white">
               <Landmark size={30} />
             </div>
 
@@ -400,7 +286,7 @@ const AboutPage = () => {
 
             <a
               href="/dashboard"
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-7 py-3.5 text-sm font-bold text-white transition hover:bg-orange-600"
+              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-bold text-[#003566] transition hover:bg-slate-200"
             >
               Explore Banking
               <ArrowRight size={17} />

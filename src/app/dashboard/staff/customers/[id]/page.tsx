@@ -24,6 +24,7 @@ import EditCutomer from "@/components/Layout/dashboard/staff/customer/EditCutome
 
 import { selectUser } from "@/Redux/features/UserSlice";
 import { useAppSelector } from "@/Redux/hooks";
+import DeleteCustomer from "@/components/Layout/dashboard/staff/customer/DeleteCustomer";
 
 type CustomerData = Record<string, unknown>;
 
@@ -545,13 +546,7 @@ function CustomerDetailsContent() {
                 <>
                  
 
-                  <Link
-                    href={`/dashboard/staff/customers/${id}/reject`}
-                    className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950"
-                  >
-                    <XCircle size={16} />
-                    Reject
-                  </Link>
+                  <DeleteCustomer customerId={id}/>
                   <Link
                     href={{
                       pathname: `/dashboard/staff/customers/${id}/approved`,
