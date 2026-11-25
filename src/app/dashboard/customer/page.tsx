@@ -580,7 +580,7 @@ export default function CustomerDashboard() {
 
           <div>
             <h2 className="font-bold text-[#003566]">
-              Customer Information
+              Account Information
             </h2>
             <p className="text-xs text-gray-500">
               Your registered profile information
