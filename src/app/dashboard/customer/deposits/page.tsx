@@ -5,19 +5,24 @@ import React, { useState } from "react";
 import {
   Wallet,
   Banknote,
-  FileText,
-  CheckCircle2,
   Loader2,
   ArrowDownToLine,
   ShieldCheck,
   ReceiptText,
   Info,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 
 import { useLoggedInUserAccounts } from "@/components/lib/hooks/useLoggedInUserAccounts";
+import { createDeposit, CreateDepositData } from "@/components/lib/Apis/deposits/deposits";
+
 
 const CustomerDepositPage = () => {
   const [loading, setLoading] = useState(false);
+  const [amountError, setAmountError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const {
     user,
@@ -26,78 +31,188 @@ const CustomerDepositPage = () => {
     error: accountError,
   } = useLoggedInUserAccounts();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Amount Validation
+  const handleAmountChange = (value: string) => {
+    setSubmitError("");
+    setSuccessMessage("");
+
+    if (!value) {
+      setAmountError("");
+      return;
+    }
+
+    const amount = Number(value);
+
+    if (!Number.isFinite(amount) || amount < 500) {
+      setAmountError("Minimum deposit amount is ৳500.");
+    } else {
+      setAmountError("");
+    }
+  };
+
+  // Submit Deposit
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
+    if (loading) return;
+
+    setSubmitError("");
+    setSuccessMessage("");
+
+    // Account Loading
     if (accountLoading) {
-      alert("Please wait. Your bank account is loading.");
+      setSubmitError("Please wait. Your bank account is loading.");
       return;
     }
 
+    // Account Error
     if (accountError) {
-      alert("Unable to load your bank account. Please try again.");
+      setSubmitError(
+        "Unable to load your bank account. Please try again."
+      );
       return;
     }
 
+    // User Validation
     if (!user?.id) {
-      alert("User information not found. Please login again.");
+      setSubmitError("User information not found. Please login again.");
       return;
     }
 
+    // Account Validation
     if (!primaryAccount) {
-      alert("No bank account found. Please create a bank account first.");
+      setSubmitError(
+        "No bank account found. Please create a bank account first."
+      );
       return;
     }
 
     if (primaryAccount.status?.toLowerCase() !== "active") {
-      alert("Your bank account is not active. Deposit is unavailable.");
+      setSubmitError(
+        "Your bank account is not active. Deposit is unavailable."
+      );
       return;
     }
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const depositAmount = Number(formData.get("depositAmount"));
 
-    if (!Number.isFinite(depositAmount) || depositAmount <= 0) {
-      alert("Please enter a valid deposit amount.");
+    const depositAmount = Number(formData.get("depositAmount"));
+    const depositMethod = formData.get("depositMethod");
+
+    // Minimum Amount Validation
+    if (!Number.isFinite(depositAmount) || depositAmount < 500) {
+      setAmountError("Minimum deposit amount is ৳500.");
+      return;
+    }
+
+    setAmountError("");
+
+    // Method Validation
+    if (
+      typeof depositMethod !== "string" ||
+      !depositMethod.trim()
+    ) {
+      setSubmitError("Please select a deposit method.");
+      return;
+    }
+
+    // Extract Account Information
+    const accountId = primaryAccount._id;
+    const accountNumber = primaryAccount.accountNumber;
+    const accountName = primaryAccount.accountName;
+    const accountType = primaryAccount.accountType;
+    const accountEmail = primaryAccount.userEmail;
+    const accountStatus = primaryAccount.status;
+
+    // Required Account Information Validation
+    if (
+      typeof accountId !== "string" ||
+      !accountId.trim() ||
+      typeof accountNumber !== "string" ||
+      !accountNumber.trim() ||
+      typeof accountName !== "string" ||
+      !accountName.trim() ||
+      typeof accountType !== "string" ||
+      !accountType.trim() ||
+      typeof accountEmail !== "string" ||
+      !accountEmail.trim() ||
+      typeof accountStatus !== "string" ||
+      !accountStatus.trim()
+    ) {
+      setSubmitError(
+        "Your bank account information is incomplete. Please contact the bank."
+      );
+      return;
+    }
+
+    // User Email Validation
+    const userEmail = user.email || accountEmail;
+
+    if (!userEmail.trim()) {
+      setSubmitError("User email information is missing.");
       return;
     }
 
     setLoading(true);
 
-    const depositData = {
-      // Deposit Information
-      depositAmount,
-      currency: primaryAccount.currency || "BDT",
-      depositMethod: formData.get("depositMethod"),
-      referenceNumber: formData.get("referenceNumber"),
-      depositNotes: formData.get("depositNotes"),
-      termsAccepted: formData.get("termsAccepted") === "true",
+    try {
+      // Prepare Deposit Data
+      const depositData: CreateDepositData = {
+        depositAmount,
+        currency: primaryAccount.currency || "BDT",
+        depositMethod: depositMethod.trim(),
 
-      // User Information
-      userId: user.id,
-      userEmail: user.email || primaryAccount.userEmail || "",
+        // User Information
+        userId: user.id,
+        userEmail,
 
-      // Bank Account Information
-      accountId: primaryAccount._id || "",
-      accountNumber: primaryAccount.accountNumber,
-      accountName: primaryAccount.accountName,
-      accountType: primaryAccount.accountType,
-      accountEmail: primaryAccount.userEmail,
-      accountStatus: primaryAccount.status,
+        // Bank Account Information
+        accountId,
+        accountNumber,
+        accountName,
+        accountType,
+        accountEmail,
+        accountStatus,
 
-      // Transaction Information
-      transactionType: "Deposit",
-      transactionStatus: "Pending",
-      transactionDate: new Date().toISOString(),
-    };
+        // Transaction Information
+        transactionType: "Deposit",
+        transactionStatus: "Pending",
+        transactionDate: new Date().toISOString(),
+      };
 
-    console.log("Customer Deposit Data:", depositData);
+      // Send POST Request to Backend
+      const result = await createDeposit(depositData);
 
-    setLoading(false);
-    form.reset();
+      if (!result.success) {
+        throw new Error(
+          result.message || "Failed to submit deposit request."
+        );
+      }
 
-    alert("Deposit request submitted successfully! Check console.");
+      // Success
+      setSuccessMessage(
+        result.message || "Deposit request submitted successfully!"
+      );
+
+      form.reset();
+      setAmountError("");
+
+      console.log("Deposit Created:", result.data);
+
+    } catch (error: unknown) {
+      console.error("Deposit Submission Error:", error);
+
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass =
@@ -151,13 +266,40 @@ const CustomerDepositPage = () => {
           </div>
         </div>
 
-        {/* Form */}
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-5 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-4">
+            <CheckCircle2
+              size={20}
+              className="mt-0.5 shrink-0 text-green-600"
+            />
+            <p className="text-sm font-medium text-green-700">
+              {successMessage}
+            </p>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {submitError && (
+          <div className="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+            <AlertCircle
+              size={20}
+              className="mt-0.5 shrink-0 text-red-600"
+            />
+            <p className="text-sm font-medium text-red-600">
+              {submitError}
+            </p>
+          </div>
+        )}
+
+        {/* Deposit Form */}
         <form
           onSubmit={handleSubmit}
           className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
         >
-          {/* Deposit Details */}
           <div className="border-b border-gray-100 p-5 sm:p-8">
+
+            {/* Form Heading */}
             <div className="mb-7 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#1762AE]">
                 <Wallet size={22} />
@@ -175,10 +317,11 @@ const CustomerDepositPage = () => {
 
             <div className="grid gap-5 sm:grid-cols-2">
 
-              {/* Amount */}
+              {/* Deposit Amount */}
               <div>
                 <label className={labelClass}>
-                  Deposit Amount (৳) <span className="text-red-500">*</span>
+                  Deposit Amount (৳){" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <div className="relative">
@@ -189,23 +332,37 @@ const CustomerDepositPage = () => {
                   <input
                     name="depositAmount"
                     type="number"
-                    min="1"
+                    min="500"
                     step="0.01"
                     placeholder="Enter deposit amount"
                     required
-                    className={`${inputClass} pl-10`}
+                    onChange={(e) =>
+                      handleAmountChange(e.target.value)
+                    }
+                    className={`${inputClass} pl-10 ${amountError
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-50"
+                        : ""
+                      }`}
                   />
                 </div>
 
-                <p className="mt-2 text-xs text-gray-400">
-                  Enter the amount you want to deposit.
-                </p>
+                {amountError ? (
+                  <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-red-600">
+                    <AlertCircle size={14} />
+                    {amountError}
+                  </p>
+                ) : (
+                  <p className="mt-2 text-xs text-gray-400">
+                    Minimum deposit amount is ৳500.
+                  </p>
+                )}
               </div>
 
-              {/* Method */}
+              {/* Deposit Method */}
               <div>
                 <label className={labelClass}>
-                  Deposit Method <span className="text-red-500">*</span>
+                  Deposit Method{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <select
@@ -217,86 +374,19 @@ const CustomerDepositPage = () => {
                   <option value="" disabled>
                     Select deposit method
                   </option>
-                  <option value="Cash Deposit">Cash Deposit</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                  <option value="Cheque Deposit">Cheque Deposit</option>
-                  <option value="Mobile Banking">Mobile Banking</option>
+
+                  <option value="Cash Deposit">
+                    Cash Deposit
+                  </option>
                 </select>
               </div>
 
-              {/* Reference */}
-              <div className="sm:col-span-2">
-                <label className={labelClass}>
-                  Transaction / Reference Number
-                </label>
-
-                <input
-                  name="referenceNumber"
-                  type="text"
-                  placeholder="Enter transaction ID or cheque reference number"
-                  className={inputClass}
-                />
-
-                <p className="mt-2 text-xs text-gray-400">
-                  Optional for cash deposits. Recommended for transfers and cheques.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Information */}
-          <div className="p-5 sm:p-8">
-            <div className="mb-7 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#1762AE]">
-                <FileText size={22} />
-              </div>
-
-              <div>
-                <h2 className="text-lg font-bold text-[#003566]">
-                  Additional Information
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Add any additional information about your deposit.
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Deposit Notes
-              </label>
-
-              <textarea
-                name="depositNotes"
-                rows={4}
-                placeholder="Write additional information about your deposit..."
-                className={`${inputClass} resize-none`}
-              />
-            </div>
-
-            {/* Terms */}
-            <div className="mt-6 rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  name="termsAccepted"
-                  value="true"
-                  required
-                  className="mt-1 h-4 w-4 shrink-0 accent-[#1762AE]"
-                />
-
-                <span className="text-xs leading-6 text-gray-600">
-                  I confirm that the deposit information provided is
-                  accurate and complete. I agree to the bank&apos;s
-                  deposit terms and conditions.
-                  <span className="text-red-500"> *</span>
-                </span>
-              </label>
             </div>
           </div>
 
           {/* Footer */}
           <div className="flex flex-col-reverse justify-between gap-4 border-t border-gray-100 bg-gray-50 p-5 sm:flex-row sm:items-center sm:px-8">
+
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <ShieldCheck size={16} className="text-green-600" />
               Your deposit request will be reviewed by the bank.
@@ -304,7 +394,11 @@ const CustomerDepositPage = () => {
 
             <button
               type="submit"
-              disabled={loading || accountLoading}
+              disabled={
+                loading ||
+                accountLoading ||
+                !!amountError
+              }
               className="flex items-center justify-center gap-2 rounded-xl bg-[#003566] px-7 py-3.5 text-sm font-bold text-white shadow-md shadow-blue-900/10 transition hover:bg-[#1762AE] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading || accountLoading ? (
