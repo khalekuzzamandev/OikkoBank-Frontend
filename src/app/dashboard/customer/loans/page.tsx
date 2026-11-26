@@ -61,7 +61,7 @@ const CustomerLoanPage = () => {
       loanAmount: Number(formData.get("loanAmount")),
       loanDuration: formData.get("loanDuration"),
       repaymentMethod: formData.get("repaymentMethod"),
-      loanPurpose: formData.get("loanPurpose"),
+   
 
       // Employment Information
       occupation: formData.get("occupation"),
@@ -88,7 +88,7 @@ const CustomerLoanPage = () => {
       accountStatus: primaryAccount.status,
 
       // Application Information
-      applicationStatus: "Pending",
+      loanStatus: "Pending",
       applicationDate: new Date().toISOString(),
     };
 
@@ -97,7 +97,7 @@ const CustomerLoanPage = () => {
     setLoading(false);
     form.reset();
 
-    alert("Loan application data submitted successfully! Check console.");
+    
   };
 
   return (
@@ -239,19 +239,7 @@ const CustomerLoanPage = () => {
               </select>
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Loan Purpose *
-              </label>
-
-              <textarea
-                name="loanPurpose"
-                rows={4}
-                required
-                placeholder="Explain why you need this loan..."
-                className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#1762AE] focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
+    
           </div>
         </div>
 
