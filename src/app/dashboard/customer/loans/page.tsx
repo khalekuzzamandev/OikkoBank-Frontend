@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { useLoggedInUserAccounts } from "@/components/lib/hooks/useLoggedInUserAccounts";
+import { createLoan } from "@/components/lib/Apis/loan/loan";
 
 const CustomerLoanPage = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const CustomerLoanPage = () => {
     error: accountError,
   } = useLoggedInUserAccounts();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (accountLoading) {
@@ -46,41 +47,51 @@ const CustomerLoanPage = () => {
     }
 
     if (primaryAccount.status?.toLowerCase() !== "active") {
-      alert("Your bank account is not active. You cannot apply for a loan.");
+      alert("Your bank account is not active.");
       return;
     }
 
-    setLoading(true);
+    // Required account information validation
+    if (
+      !primaryAccount._id ||
+      !primaryAccount.accountNumber ||
+      !primaryAccount.accountName ||
+      !primaryAccount.accountType ||
+      !primaryAccount.userEmail ||
+      !primaryAccount.status
+    ) {
+      alert("Your bank account information is incomplete.");
+      return;
+    }
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
     const loanData = {
       // Loan Information
-      loanType: formData.get("loanType"),
+      loanType: String(formData.get("loanType") || ""),
       loanAmount: Number(formData.get("loanAmount")),
-      loanDuration: formData.get("loanDuration"),
-      repaymentMethod: formData.get("repaymentMethod"),
-   
+      loanDuration: String(formData.get("loanDuration") || ""),
+      repaymentMethod: String(formData.get("repaymentMethod") || ""),
 
       // Employment Information
-      occupation: formData.get("occupation"),
-      organization: formData.get("organization"),
+      occupation: String(formData.get("occupation") || ""),
+      organization: String(formData.get("organization") || ""),
       monthlyIncome: Number(formData.get("monthlyIncome")),
       monthlyExpenses: Number(formData.get("monthlyExpenses")),
-      employmentDuration: formData.get("employmentDuration"),
-      officePhone: formData.get("officePhone"),
+      employmentDuration: String(formData.get("employmentDuration") || ""),
+      officePhone: String(formData.get("officePhone") || ""),
 
       // Additional Information
-      additionalNotes: formData.get("additionalNotes"),
+      additionalNotes: String(formData.get("additionalNotes") || ""),
       termsAccepted: formData.get("termsAccepted") === "true",
 
-      // Logged-in User Information
+      // User Information
       userId: user.id,
-      userEmail: user.email || primaryAccount.userEmail || "",
+      userEmail: user.email || primaryAccount.userEmail,
 
-      // Bank Account Information
-      accountId: primaryAccount._id || "",
+      // Account Information
+      accountId: primaryAccount._id,
       accountNumber: primaryAccount.accountNumber,
       accountName: primaryAccount.accountName,
       accountType: primaryAccount.accountType,
@@ -88,16 +99,34 @@ const CustomerLoanPage = () => {
       accountStatus: primaryAccount.status,
 
       // Application Information
-      loanStatus: "Pending",
+      applicationStatus: "Pending",
       applicationDate: new Date().toISOString(),
     };
 
-    console.log("Loan Application Data:", loanData);
+    try {
+      setLoading(true);
 
-    setLoading(false);
-    form.reset();
+      const response = await createLoan(loanData);
 
-    
+      if (!response.success) {
+        throw new Error(response.message || "Loan application failed.");
+      }
+
+      alert(response.message || "Loan application submitted successfully!");
+
+      // Reset form only after successful database submission
+      form.reset();
+    } catch (error) {
+      console.error("Loan Application Error:", error);
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit loan application."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -289,13 +318,14 @@ const CustomerLoanPage = () => {
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Company / Organization
+                Company / Organization *
               </label>
 
               <input
                 name="organization"
                 type="text"
                 placeholder="Enter organization name"
+                required
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#1762AE]"
               />
             </div>
@@ -332,26 +362,28 @@ const CustomerLoanPage = () => {
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Employment Duration
+                Employment Duration *
               </label>
 
               <input
                 name="employmentDuration"
                 type="text"
                 placeholder="e.g. 3 years"
+                required
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#1762AE]"
               />
             </div>
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Office Contact Number
+                Office Contact Number *
               </label>
 
               <input
                 name="officePhone"
                 type="tel"
                 placeholder="Enter office phone number"
+                required
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#1762AE]"
               />
             </div>
