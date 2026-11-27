@@ -178,41 +178,7 @@ export default function AccountPage() {
     }
   };
 
-  // Delete account
-  const handleDelete = async (id: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this bank account?"
-    );
 
-    if (!confirmed) return;
-
-    try {
-      setDeletingId(id);
-
-      const response = await fetch(`${BASE_URL}/api/accounts/${id}`, {
-        method: "DELETE",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || result.success === false) {
-        throw new Error(result.message || "Account deletion failed");
-      }
-
-      setAccounts((previous) =>
-        previous.filter((account) => account._id !== id)
-      );
-
-      alert("Account deleted successfully!");
-    } catch (err) {
-      console.error("Delete account error:", err);
-      alert(
-        err instanceof Error ? err.message : "Failed to delete account"
-      );
-    } finally {
-      setDeletingId(null);
-    }
-  };
 
   // Format money
   const formatMoney = (amount: number, currency = "BDT") => {
@@ -467,21 +433,6 @@ export default function AccountPage() {
                             className="rounded-lg border border-amber-200 bg-amber-50 p-2 text-amber-600 transition hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-400"
                           >
                             <Pencil size={17} />
-                          </button>
-
-                          <button
-                            type="button"
-                            title="Delete Account"
-                            aria-label="Delete Account"
-                            disabled={deletingId === account._id}
-                            onClick={() => void handleDelete(account._id)}
-                            className="rounded-lg border border-red-200 bg-red-50 p-2 text-red-600 transition hover:bg-red-100 disabled:opacity-50 dark:border-red-900 dark:bg-red-950/50 dark:text-red-400"
-                          >
-                            {deletingId === account._id ? (
-                              <Loader2 size={17} className="animate-spin" />
-                            ) : (
-                              <Trash2 size={17} />
-                            )}
                           </button>
                         </div>
                       </td>
