@@ -36,9 +36,12 @@ export const createWithdraw = async (withdrawData: Record<string, unknown>) => {
 };
 
 // Get All Withdrawals
-export const getAllWithdraws = async () => {
+export const getAllWithdraws = async (userId?: string) => {
   try {
-    const res = await fetch(`${baseURL}/api/withdrawals`, {
+    const query = userId
+      ? `?userId=${encodeURIComponent(userId)}`
+      : "";
+    const res = await fetch(`${baseURL}/api/withdrawals${query}`, {
       method: "GET",
       cache: "no-store",
     });

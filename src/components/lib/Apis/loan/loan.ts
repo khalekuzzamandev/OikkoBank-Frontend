@@ -55,11 +55,16 @@ export const createLoan = async <T = Record<string, unknown>>(
 };
 
 // Get All Loans
-export const getAllLoans = async <T = unknown>(): Promise<LoanResponse<T>> => {
+export const getAllLoans = async <T = unknown>(
+  userId?: string
+): Promise<LoanResponse<T>> => {
   try {
     if (!baseURL) throw new Error("Backend URL is not configured");
 
-    const response = await fetch(`${baseURL}/api/loans`, {
+    const query = userId
+      ? `?userId=${encodeURIComponent(userId)}`
+      : "";
+    const response = await fetch(`${baseURL}/api/loans${query}`, {
       method: "GET",
       cache: "no-store",
     });

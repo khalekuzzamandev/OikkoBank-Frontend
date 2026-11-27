@@ -109,11 +109,14 @@ export const createDeposit = async (
 };
 
 // Get All Deposits
-export const getAllDeposits = async (): Promise<
+export const getAllDeposits = async (userId?: string): Promise<
   DepositResponse<unknown[]>
 > => {
   try {
-    const url = getApiURL("/api/deposits");
+    const query = userId
+      ? `?userId=${encodeURIComponent(userId)}`
+      : "";
+    const url = getApiURL(`/api/deposits${query}`);
 
     const response = await fetch(url, {
       method: "GET",
