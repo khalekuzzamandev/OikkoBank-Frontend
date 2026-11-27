@@ -12,7 +12,6 @@ import {
   Loader2,
   Info,
   CreditCard,
-  UserRound,
   Banknote,
   CircleCheck,
 } from "lucide-react";
@@ -341,7 +340,30 @@ const CustomerTransferBlance = () => {
                 </option>
               </select>
             </div>
+            {/* Transaction Password */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Transaction Password
+              </label>
 
+              <div className="relative">
+                <LockKeyhole
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  type="password"
+                  value={transactionPassword}
+                  onChange={(e) =>
+                    setTransactionPassword(e.target.value)
+                  }
+                  placeholder="Enter transaction password"
+                  required
+                  className="w-full rounded-xl border border-slate-300 py-3 pl-10 pr-4 outline-none transition focus:border-blue-600"
+                />
+              </div>
+            </div>
             {/* Recipient Account */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -367,30 +389,7 @@ const CustomerTransferBlance = () => {
               </div>
             </div>
 
-            {/* Transaction Password */}
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Transaction Password
-              </label>
-
-              <div className="relative">
-                <LockKeyhole
-                  size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type="password"
-                  value={transactionPassword}
-                  onChange={(e) =>
-                    setTransactionPassword(e.target.value)
-                  }
-                  placeholder="Enter transaction password"
-                  required
-                  className="w-full rounded-xl border border-slate-300 py-3 pl-10 pr-4 outline-none transition focus:border-blue-600"
-                />
-              </div>
-            </div>
+          
           </div>
 
           {/* Balance Warning */}
