@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Wallet,
   Banknote,
@@ -10,83 +10,224 @@ import {
   Loader2,
   Info,
   ReceiptText,
+  CheckCircle2,
+  UserRound,
 } from "lucide-react";
 
 import { useLoggedInUserAccounts } from "@/components/lib/hooks/useLoggedInUserAccounts";
 import { createWithdraw } from "@/components/lib/Apis/withdrawals/withdrawals";
+import { getCustomerBankAccounts } from "@/components/lib/Apis/accounts/account";
+
+interface BankAccount {
+  _id: string;
+  userId?: string;
+  accountNumber: string;
+  accountName: string;
+  accountType: string;
+  currency?: string;
+  status: string;
+  balance: number;
+  userEmail?: string;
+}
 
 const CustomerwithdrawalsPage = () => {
   const [loading, setLoading] = useState(false);
+  const [accountLoading, setAccountLoading] = useState(true);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const [receiptNumber, setReceiptNumber] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const [allAccounts, setAllAccounts] = useState<BankAccount[]>([]);
+  const [withdrawalAccount, setWithdrawalAccount] =
+    useState<BankAccount | null>(null);
 
   const {
     user,
     accounts,
-    loading: accountLoading,
-    error: accountError,
+    primaryAccount,
+    loading: userLoading,
+    error: userError,
   } = useLoggedInUserAccounts();
 
+  // Logged-in user's account information
+  const senderUserId = user?.id || "";
+  const senderAccountNumber = primaryAccount?.accountNumber || "";
+  const senderCurrentBalance = Number(primaryAccount?.balance ?? 0);
+
+  // Check whether account belongs to logged-in user
+  const isOwnAccount = (account: BankAccount) => {
+    if (account.userId && account.userId === senderUserId) {
+      return true;
+    }
+
+    if (
+      user?.email &&
+      account.userEmail &&
+      account.userEmail.trim().toLowerCase() ===
+      user.email.trim().toLowerCase()
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // Fetch all bank accounts
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setAccountLoading(true);
+
+      try {
+        const result = await getCustomerBankAccounts();
+
+        if (!result || result.success === false) {
+          throw new Error(
+            result?.message || "Failed to fetch bank accounts."
+          );
+        }
+
+        const accountList = Array.isArray(result)
+          ? result
+          : Array.isArray(result.data)
+            ? result.data
+            : Array.isArray(result.accounts)
+              ? result.accounts
+              : [];
+
+        setAllAccounts(accountList);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load bank accounts."
+        );
+      } finally {
+        setAccountLoading(false);
+      }
+    };
+
+    fetchAccounts();
+  }, []);
+
+  // Receipt Number Change
   const handleReceiptChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setReceiptNumber(e.target.value);
+    setWithdrawalAccount(null);
     setError("");
     setSuccess("");
   };
 
-  const isReceiptValid =
-    receiptNumber.trim().length > 0 &&
-    accounts.some(
+  // Verify Account
+  const handleAccountLookup = () => {
+    setError("");
+    setSuccess("");
+    setWithdrawalAccount(null);
+
+    const number = receiptNumber.trim();
+
+    if (!number) {
+      setError("Please enter your account number.");
+      return;
+    }
+
+    if (userLoading || !user?.email) {
+      setError("Unable to verify your login. Please login again.");
+      return;
+    }
+
+    if (!primaryAccount?.accountNumber) {
+      setError("Your own bank account was not found.");
+      return;
+    }
+
+    const matchedAccount = allAccounts.find(
       (account) =>
-        account.accountNumber?.trim() === receiptNumber.trim()
+        account.accountNumber?.trim() === number
     );
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (!matchedAccount) {
+      setError("Invalid account number. Account not found.");
+      return;
+    }
+
+    if (matchedAccount.status?.toLowerCase() !== "active") {
+      setError("This bank account is not active.");
+      return;
+    }
+
+    // Prevent own account withdrawal
+    if (isOwnAccount(matchedAccount)) {
+      setError(
+        "You cannot withdraw money from your own bank account."
+      );
+      return;
+    }
+
+    setWithdrawalAccount(matchedAccount);
+  };
+
+  // Submit Withdrawal
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     setError("");
     setSuccess("");
 
-    if (accountLoading) {
-      setError("Please wait. Your account is loading.");
+    if (userLoading || accountLoading) {
+      setError("Please wait. Account information is loading.");
       return;
     }
 
-    if (accountError) {
-      setError("Unable to load your bank account. Please try again.");
+    if (userError || !user?.id || !user?.email) {
+      setError("Unable to verify your login. Please login again.");
       return;
     }
 
-    if (!user?.id || accounts.length === 0) {
-      setError("Bank account not found. Please login again.");
+    if (!primaryAccount?.accountNumber) {
+      setError("Your own bank account was not found.");
       return;
     }
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const withdrawalAccount = accounts.find(
-      (account) =>
-        account.accountNumber?.trim() === receiptNumber.trim()
-    );
 
     if (!withdrawalAccount) {
-      setError("Please enter a valid account/receipt number.");
+      setError("Please verify your account number first.");
       return;
     }
 
-    if (withdrawalAccount.status?.toLowerCase() !== "active") {
-      setError("Your bank account is not active.");
-      return;
-    }
-
-    const withdrawalAmount = Number(
-      formData.get("withdrawalAmount")
+    // Verify target account again
+    const matchedAccount = allAccounts.find(
+      (account) =>
+        account.accountNumber?.trim() === receiptNumber.trim() &&
+        account._id === withdrawalAccount._id
     );
 
-    // Amount Validation
+    if (!matchedAccount) {
+      setError("Account verification failed.");
+      return;
+    }
+
+    if (matchedAccount.status?.toLowerCase() !== "active") {
+      setError("Your selected bank account is not active.");
+      return;
+    }
+
+    // Prevent own account withdrawal again
+    if (isOwnAccount(matchedAccount)) {
+      setWithdrawalAccount(null);
+      setError(
+        "You cannot withdraw money from your own bank account."
+      );
+      return;
+    }
+
+    const withdrawalAmount = Number(amount);
+
     if (
       !Number.isFinite(withdrawalAmount) ||
       withdrawalAmount < 500
@@ -95,9 +236,16 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
-    // Balance Validation
-    if (withdrawalAmount > Number(withdrawalAccount.balance)) {
+    if (withdrawalAmount > Number(matchedAccount.balance)) {
       setError("Insufficient account balance.");
+      return;
+    }
+
+    if (
+      !Number.isFinite(senderCurrentBalance) ||
+      senderCurrentBalance < 0
+    ) {
+      setError("Invalid sender account balance.");
       return;
     }
 
@@ -105,30 +253,31 @@ const CustomerwithdrawalsPage = () => {
 
     try {
       const withdrawalData = {
-        // Amount fields
+        // Withdrawal Amount
         amount: withdrawalAmount,
-        withdrawalAmount: withdrawalAmount,
+        withdrawalAmount,
 
-        // Receipt
-        receiptNumber: receiptNumber.trim(),
+        // Target Account Information
+        receiptNumber: matchedAccount.accountNumber,
+        accountId: matchedAccount._id,
+        accountNumber: matchedAccount.accountNumber,
+        accountName: matchedAccount.accountName,
+        accountType: matchedAccount.accountType,
+        accountEmail: matchedAccount.userEmail,
+        accountStatus: matchedAccount.status,
 
-        // Currency and method
-        currency: withdrawalAccount.currency || "BDT",
-        withdrawalMethod: "Branch Cash Withdrawal",
+        // Sender Information (Logged-in User)
+        senderUserId: user.id,
+        senderAccountNumber: primaryAccount.accountNumber,
+        senderCurrentBalance: Number(primaryAccount.balance ?? 0),
 
-        // User information
+        // Logged-in User Information
         userId: user.id,
-        userEmail: user.email || withdrawalAccount.userEmail || "",
+        userEmail: user.email,
 
-        // Account information
-        accountId: withdrawalAccount._id || "",
-        accountNumber: withdrawalAccount.accountNumber,
-        accountName: withdrawalAccount.accountName,
-        accountType: withdrawalAccount.accountType,
-        accountEmail: withdrawalAccount.userEmail,
-        accountStatus: withdrawalAccount.status,
-
-        // Transaction information
+        // Transaction Information
+        currency: matchedAccount.currency || "BDT",
+        withdrawalMethod: "Branch Cash Withdrawal",
         transactionType: "Withdrawal",
         transactionStatus: "Pending",
         transactionDate: new Date().toISOString(),
@@ -138,16 +287,19 @@ const CustomerwithdrawalsPage = () => {
 
       if (!result || result.success === false) {
         throw new Error(
-          result?.message || "Failed to submit withdrawal request."
+          result?.message ||
+          "Failed to submit withdrawal request."
         );
       }
 
       setSuccess(
-        result.message || "Withdrawal request submitted successfully!"
+        result.message ||
+        "Withdrawal request submitted successfully!"
       );
 
-      form.reset();
+      setAmount("");
       setReceiptNumber("");
+      setWithdrawalAccount(null);
 
     } catch (err) {
       setError(
@@ -166,6 +318,8 @@ const CustomerwithdrawalsPage = () => {
   const labelClass =
     "mb-2 block text-sm font-semibold text-gray-700";
 
+  const isReceiptValid = !!withdrawalAccount;
+
   return (
     <div className="min-h-screen bg-[#F4F7FB] p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-5xl">
@@ -183,7 +337,7 @@ const CustomerwithdrawalsPage = () => {
               </h1>
 
               <p className="mt-1 text-sm text-gray-500">
-                Request a branch cash withdrawal from your bank account.
+                Request a branch cash withdrawal from another bank account.
               </p>
             </div>
           </div>
@@ -206,10 +360,9 @@ const CustomerwithdrawalsPage = () => {
             </h3>
 
             <p className="mt-1 text-sm leading-6 text-blue-800">
-              Enter your withdrawal amount and an account/receipt
-              number registered to your bank account. Your request will
-              be reviewed by the bank.
-              Minimum withdrawal amount is ৳500.
+              Enter another person&apos;s active bank account number to
+              request a withdrawal. You cannot withdraw from your
+              own account using this service. Minimum amount is ৳500.
             </p>
           </div>
         </div>
@@ -221,7 +374,7 @@ const CustomerwithdrawalsPage = () => {
         >
           <div className="border-b border-gray-100 p-5 sm:p-8">
 
-            {/* Section Heading */}
+            {/* Heading */}
             <div className="mb-7 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#1762AE]">
                 <Wallet size={22} />
@@ -233,14 +386,14 @@ const CustomerwithdrawalsPage = () => {
                 </h2>
 
                 <p className="text-xs text-gray-500">
-                  Enter the required information for your withdrawal.
+                  Verify another person&apos;s account and enter withdrawal amount.
                 </p>
               </div>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
 
-              {/* Withdrawal Amount */}
+              {/* Amount */}
               <div>
                 <label className={labelClass}>
                   Withdrawal Amount (৳)
@@ -257,6 +410,12 @@ const CustomerwithdrawalsPage = () => {
                     type="number"
                     min="500"
                     step="0.01"
+                    value={amount}
+                    onChange={(e) => {
+                      setAmount(e.target.value);
+                      setError("");
+                      setSuccess("");
+                    }}
                     placeholder="Minimum ৳500"
                     required
                     className={`${inputClass} pl-10`}
@@ -268,59 +427,122 @@ const CustomerwithdrawalsPage = () => {
                 </p>
               </div>
 
-              {/* Receipt Number */}
+              {/* Account Number */}
               <div>
                 <label className={labelClass}>
-                  Account / Receipt Number
+                  Account Number
                   <span className="text-red-500"> *</span>
                 </label>
 
-                <div className="relative">
-                  <ReceiptText
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+                <div className="flex gap-2">
+                  <div className="relative min-w-0 flex-1">
+                    <ReceiptText
+                      size={18}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
 
-                  <input
-                    name="receiptNumber"
-                    type="text"
-                    autoComplete="off"
-                    value={receiptNumber}
-                    onChange={handleReceiptChange}
-                    maxLength={32}
-                    required
-                    placeholder="Enter your account/receipt number"
-                    className={`${inputClass} pl-11 ${receiptNumber.trim().length > 0 && !isReceiptValid
-                        ? "border-red-500 focus:border-red-500 focus:ring-red-50"
-                        : isReceiptValid
-                          ? "border-green-500"
-                          : ""
-                      }`}
-                  />
+                    <input
+                      name="receiptNumber"
+                      type="text"
+                      autoComplete="off"
+                      value={receiptNumber}
+                      onChange={handleReceiptChange}
+                      maxLength={32}
+                      required
+                      placeholder="Enter account number"
+                      className={`${inputClass} pl-11 ${receiptNumber.trim() && !isReceiptValid
+                          ? "border-red-400"
+                          : isReceiptValid
+                            ? "border-green-500"
+                            : ""
+                        }`}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAccountLookup}
+                    disabled={
+                      accountLoading ||
+                      userLoading ||
+                      !receiptNumber.trim()
+                    }
+                    className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#003566] px-4 text-sm font-bold text-white transition hover:bg-[#1762AE] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {accountLoading ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      "Verify"
+                    )}
+                  </button>
                 </div>
 
-                {receiptNumber.trim().length > 0 &&
-                  !isReceiptValid &&
-                  !accountLoading && (
-                    <p className="mt-2 text-xs font-medium text-red-500">
-                      Please enter a valid account/receipt number.
-                    </p>
-                  )}
-
-                {isReceiptValid && (
-                  <p className="mt-2 text-xs font-medium text-green-600">
-                    Account/receipt number matches your account.
-                  </p>
-                )}
-
                 <p className="mt-2 text-xs text-gray-500">
-                  Must match an account number registered to your profile.
+                  Your own account number is not allowed.
                 </p>
               </div>
-
             </div>
 
-            {/* Error Message */}
+            {/* Verified Account */}
+            {withdrawalAccount && (
+              <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5">
+                <div className="mb-4 flex items-center gap-2 text-green-700">
+                  <CheckCircle2 size={21} />
+
+                  <h3 className="text-sm font-bold">
+                    Account Verified Successfully
+                  </h3>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex items-center gap-3">
+                    <UserRound size={20} className="text-green-700" />
+
+                    <div>
+                      <p className="text-xs text-gray-500">
+                        Account Holder
+                      </p>
+
+                      <p className="text-sm font-bold text-gray-800">
+                        {withdrawalAccount.accountName}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Account Number
+                    </p>
+
+                    <p className="text-sm font-bold text-gray-800">
+                      {withdrawalAccount.accountNumber}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Account Type
+                    </p>
+
+                    <p className="text-sm font-bold text-gray-800">
+                      {withdrawalAccount.accountType}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Status
+                    </p>
+
+                    <p className="text-sm font-bold text-green-700">
+                      {withdrawalAccount.status}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error */}
             {error && (
               <div className="mt-5 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
                 <Info size={18} className="shrink-0" />
@@ -328,20 +550,20 @@ const CustomerwithdrawalsPage = () => {
               </div>
             )}
 
-            {/* Success Message */}
+            {/* Success */}
             {success && (
               <div className="mt-5 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
                 <ShieldCheck size={18} className="shrink-0" />
                 {success}
               </div>
             )}
-
           </div>
 
           {/* Footer */}
           <div className="flex flex-col-reverse justify-between gap-4 border-t border-gray-100 bg-gray-50 p-5 sm:flex-row sm:items-center sm:px-8">
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <ShieldCheck size={16} className="text-green-600" />
+
               Your withdrawal request will be reviewed by the bank.
             </div>
 
@@ -350,21 +572,23 @@ const CustomerwithdrawalsPage = () => {
               disabled={
                 loading ||
                 accountLoading ||
-                !!accountError ||
+                userLoading ||
+                !!userError ||
+                !primaryAccount?.accountNumber ||
                 !isReceiptValid
               }
               className="flex items-center justify-center gap-2 rounded-xl bg-[#003566] px-7 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#1762AE] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading || accountLoading ? (
+              {loading ? (
                 <Loader2 size={19} className="animate-spin" />
               ) : (
                 <Banknote size={19} />
               )}
 
-              {accountLoading
-                ? "Loading Account..."
-                : loading
-                  ? "Submitting..."
+              {loading
+                ? "Submitting..."
+                : accountLoading || userLoading
+                  ? "Loading Accounts..."
                   : "Submit Withdrawal Request"}
             </button>
           </div>
@@ -384,7 +608,6 @@ const CustomerwithdrawalsPage = () => {
             will not be deducted at this stage.
           </p>
         </div>
-
       </div>
     </div>
   );
