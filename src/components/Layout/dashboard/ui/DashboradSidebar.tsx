@@ -60,11 +60,12 @@ const DashboardItem = {
     { icon: LayoutDashboard, label: "Overview", href: "/dashboard/customer" },
     { icon: Wallet, label: "My Accounts", href: "/dashboard/customer/accounts" },
     { icon: Banknote, label: "Deposits", href: "/dashboard/customer/deposits" },
+    { icon: ArrowRightLeft, label: "Transfer", href: "/dashboard/customer/transfer" },
     { icon: HandCoins, label: "Loans", href: "/dashboard/customer/loans" },
     { icon: ArrowUpFromLine, label: "Withdrawals", href: "/dashboard/customer/withdrawals" },
     { icon: UserRound, label: "My Profile", href: "/dashboard/customer/profile" },
     { icon: ArrowLeftRight, label: "Transactions", href: "/dashboard/customer/transactions" },
-    { icon: ArrowRightLeft, label: "Transfer Money", href: "/dashboard/customer/transfer" },
+   
   ],
 };
 
