@@ -69,10 +69,16 @@ export const getAllWithdraws = async (userId?: string) => {
 // Get Withdraw By ID
 export const getWithdrawById = async (id: string) => {
   try {
-    const res = await fetch(`${baseURL}/api/withdrawals/${id}`, {
+    if (!baseURL) throw new Error("Backend URL is not configured");
+    if (!id.trim()) throw new Error("Withdrawal ID is required");
+
+    const res = await fetch(
+      `${baseURL}/api/withdrawals/${encodeURIComponent(id)}`,
+      {
       method: "GET",
       cache: "no-store",
-    });
+      }
+    );
 
     const data = await res.json();
 
@@ -94,14 +100,60 @@ export const getWithdrawById = async (id: string) => {
   }
 };
 
+export interface UpdateWithdrawData {
+  transactionStatus: "Pending" | "Completed" | "Failed";
+}
+
+export const updateWithdraw = async (
+  id: string,
+  updateData: UpdateWithdrawData
+) => {
+  try {
+    if (!baseURL) throw new Error("Backend URL is not configured");
+    if (!id.trim()) throw new Error("Withdrawal ID is required");
+
+    const res = await fetch(
+      `${baseURL}/api/withdrawals/${encodeURIComponent(id)}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to update withdrawal");
+    }
+
+    return data;
+  } catch (error: unknown) {
+    console.error("Update Withdrawal Error:", error);
+
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to update withdrawal",
+    };
+  }
+};
 
 // Delete Withdraw
 export const deleteWithdraw = async (id: string) => {
   try {
-    const res = await fetch(`${baseURL}/api/withdrawals/${id}`, {
+    if (!baseURL) throw new Error("Backend URL is not configured");
+    if (!id.trim()) throw new Error("Withdrawal ID is required");
+
+    const res = await fetch(
+      `${baseURL}/api/withdrawals/${encodeURIComponent(id)}`,
+      {
       method: "DELETE",
       cache: "no-store",
-    });
+      }
+    );
 
     const data = await res.json();
 
@@ -122,4 +174,7 @@ export const deleteWithdraw = async (id: string) => {
     };
   }
 };
+
+
+
 
