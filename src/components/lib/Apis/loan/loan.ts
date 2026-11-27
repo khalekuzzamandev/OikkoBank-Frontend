@@ -125,5 +125,34 @@ export const deleteLoan = async (
   }
 };
 
+export interface UpdateLoanData {
+  applicationStatus?: "Pending" | "Reviewing" | "Approved" | "Rejected" | "Cancelled";
+}
 
-// update loan
+export const updateLoan = async (
+  id: string,
+  updateData: UpdateLoanData
+): Promise<LoanResponse> => {
+  try {
+    if (!baseURL) throw new Error("Backend URL is not configured");
+    if (!id) throw new Error("Loan ID is required");
+
+    const response = await fetch(
+      `${baseURL}/api/loans/${encodeURIComponent(id)}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
+        cache: "no-store",
+      }
+    );
+
+    return await handleResponse(response);
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to update loan"
+    );
+  }
+};

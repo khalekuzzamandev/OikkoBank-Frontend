@@ -47,9 +47,9 @@ const DashboardItem = {
 
   staff: [
     { icon: LayoutDashboard, label: "Overview", href: "/dashboard/staff" },
-    { icon: Wallet, label: "Accounts", href: "/dashboard/staff/accounts" },
-    { icon: Users, label: "Customers", href: "/dashboard/staff/customers" },
-    { icon: ArrowLeftRight, label: "Transactions", href: "/dashboard/staff/transactions" },
+    { icon: Wallet, label: "Manage Accounts", href: "/dashboard/staff/accounts" },
+    { icon: Users, label: "Manage Customers", href: "/dashboard/staff/customers" },
+    { icon: ArrowLeftRight, label: "All Transactions", href: "/dashboard/staff/transactions" },
     { icon: HandCoins, label: "Loan Applications", href: "/dashboard/staff/loan-applications" },
     { icon: Banknote, label: "Deposit Requests", href: "/dashboard/staff/deposit-requests" },
     { icon: ArrowUpFromLine, label: "Withdrawal Requests", href: "/dashboard/staff/withdrawal-requests" },
