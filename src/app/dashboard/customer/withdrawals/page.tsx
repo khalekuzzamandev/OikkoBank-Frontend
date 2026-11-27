@@ -62,7 +62,7 @@ const CustomerwithdrawalsPage = () => {
     primaryAccount?.balance ?? 0
   );
 
-  // Check whether account belongs to logged-in user
+  // Check Own Account
   const isOwnAccount = (account: BankAccount) => {
     if (
       account.userId &&
@@ -180,7 +180,6 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
-    // Prevent own account withdrawal
     if (isOwnAccount(matchedAccount)) {
       setError(
         "You cannot withdraw money from your own bank account."
@@ -223,8 +222,7 @@ const CustomerwithdrawalsPage = () => {
     // Verify Target Account Again
     const matchedAccount = allAccounts.find(
       (account) =>
-        account.accountNumber?.trim() ===
-        receiptNumber.trim() &&
+        account.accountNumber?.trim() === receiptNumber.trim() &&
         account._id === withdrawalAccount._id
     );
 
@@ -246,6 +244,7 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
+    // Validate Withdrawal Amount
     const withdrawalAmount = Number(amount);
 
     if (
@@ -256,16 +255,19 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
-    if (withdrawalAmount > Number(matchedAccount.balance)) {
-      setError("Insufficient account balance.");
-      return;
-    }
-
+    // Check Logged-in User Current Balance
     if (
       !Number.isFinite(senderCurrentBalance) ||
       senderCurrentBalance < 0
     ) {
-      setError("Invalid sender account balance.");
+      setError("Unable to verify your current account balance.");
+      return;
+    }
+
+    if (withdrawalAmount > senderCurrentBalance) {
+      setError(
+        `Insufficient balance! Your current balance is ৳${senderCurrentBalance.toLocaleString("en-BD")}. You cannot withdraw more than your available balance.`
+      );
       return;
     }
 
@@ -413,6 +415,33 @@ const CustomerwithdrawalsPage = () => {
               </div>
             </div>
 
+            {/* Current Balance */}
+            <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-blue-800">
+                    Your Current Balance
+                  </p>
+
+                  <h3 className="mt-2 text-2xl font-bold text-[#003566]">
+                    {userLoading ? (
+                      <Loader2 className="animate-spin" size={22} />
+                    ) : (
+                      `৳${senderCurrentBalance.toLocaleString("en-BD")}`
+                    )}
+                  </h3>
+                </div>
+
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#1762AE]">
+                  <Wallet size={25} />
+                </div>
+              </div>
+
+              <p className="mt-2 text-xs text-blue-700">
+                You cannot withdraw more than your current balance.
+              </p>
+            </div>
+
             <div className="grid gap-5 sm:grid-cols-2">
 
               {/* Amount */}
@@ -431,6 +460,7 @@ const CustomerwithdrawalsPage = () => {
                     name="withdrawalAmount"
                     type="number"
                     min="500"
+                    max={senderCurrentBalance}
                     step="0.01"
                     value={amount}
                     onChange={(e) => {
@@ -445,8 +475,15 @@ const CustomerwithdrawalsPage = () => {
                 </div>
 
                 <p className="mt-2 text-xs font-medium text-gray-500">
-                  Minimum withdrawal: ৳500
+                  Minimum ৳500 · Maximum ৳
+                  {senderCurrentBalance.toLocaleString("en-BD")}
                 </p>
+
+                {amount && Number(amount) > senderCurrentBalance && (
+                  <p className="mt-2 text-xs font-semibold text-red-600">
+                    Amount exceeds your available balance.
+                  </p>
+                )}
               </div>
 
               {/* Target Account Number */}
@@ -598,7 +635,10 @@ const CustomerwithdrawalsPage = () => {
                 userLoading ||
                 !!userError ||
                 !senderAccountNumber ||
-                !isReceiptValid
+                !isReceiptValid ||
+                !amount ||
+                Number(amount) > senderCurrentBalance ||
+                Number(amount) < 500
               }
               className="flex items-center justify-center gap-2 rounded-xl bg-[#003566] px-7 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#1762AE] disabled:cursor-not-allowed disabled:opacity-60"
             >

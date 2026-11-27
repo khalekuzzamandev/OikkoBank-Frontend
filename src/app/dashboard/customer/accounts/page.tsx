@@ -192,7 +192,7 @@ export default function CustomerAccountPage() {
       description: "Cash withdrawal",
       icon: ArrowUpFromLine,
       color: "bg-orange-50 text-orange-600",
-      path: "/dashboard/customer/withdrawls",
+      path: "/dashboard/customer/withdrawals",
     },
     {
       title: "Transfer",
