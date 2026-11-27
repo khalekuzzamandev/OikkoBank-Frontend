@@ -14,6 +14,8 @@ import {
   CircleCheck,
 } from "lucide-react";
 
+import { getCustomerBankAccounts } from "@/components/lib/Apis/accounts/account";
+
 const CustomerTransferBlance = () => {
   const {
     user,
@@ -76,7 +78,7 @@ const CustomerTransferBlance = () => {
       return;
     }
 
-    // Account Number Must Be Exactly 9 Digits
+    // Exactly 9 Digits
     if (!/^\d{9}$/.test(recipientAccountNumber)) {
       setError("Account number must be exactly 9 digits.");
       return;
@@ -84,7 +86,7 @@ const CustomerTransferBlance = () => {
 
     // Prevent Own Account Transfer
     if (
-      recipientAccountNumber === String(primaryAccount.accountNumber)
+      recipientAccountNumber === String(primaryAccount.accountNumber).trim()
     ) {
       setError("You cannot transfer money to your own account.");
       return;
@@ -93,13 +95,53 @@ const CustomerTransferBlance = () => {
     setLoading(true);
 
     try {
-      const formValues = Object.fromEntries(formData.entries());
+      // Fetch All Customer Bank Accounts
+      const allUserAccount = await getCustomerBankAccounts();
 
+      if (!allUserAccount || allUserAccount.success === false) {
+        throw new Error(
+          allUserAccount?.message || "Unable to verify recipient account."
+        );
+      }
+
+      // Extract Accounts From API Response
+      const accountsData = allUserAccount.data;
+
+      const customerAccounts = Array.isArray(accountsData)
+        ? accountsData
+        : accountsData
+          ? [accountsData]
+          : [];
+
+      // Find Recipient Account
+      const recipientAccount = customerAccounts.find(
+        (account) =>
+          String(account.accountNumber || "").trim() ===
+          recipientAccountNumber
+      );
+
+      // Account Not Registered
+      if (!recipientAccount) {
+        setError("This account number is not registered.");
+        return;
+      }
+
+      // Recipient Account Must Be Active
+      if (recipientAccount.status?.toLowerCase() !== "active") {
+        setError("Recipient bank account is not active.");
+        return;
+      }
+
+      // Prepare Transfer Data
       const transferData = {
-        ...formValues,
-
         transferAmount,
+
         recipientAccountNumber,
+
+        recipientAccountId: recipientAccount._id || "",
+        recipientAccountName: recipientAccount.accountName,
+        recipientAccountType: recipientAccount.accountType,
+        recipientEmail: recipientAccount.userEmail || "",
 
         userId: user.id,
         userEmail: user.email || primaryAccount.userEmail || "",
@@ -120,7 +162,9 @@ const CustomerTransferBlance = () => {
       console.log(transferData);
       console.log("========================================");
 
-      setSuccess("Transfer information validated successfully!");
+      setSuccess(
+        `Recipient verified successfully! Account Holder: ${recipientAccount.accountName}.`
+      );
 
       form.reset();
 
@@ -178,7 +222,7 @@ const CustomerTransferBlance = () => {
             <p className="mt-1 text-sm text-slate-600">
               Minimum transfer amount is ৳500. You cannot transfer more
               than your available balance. Recipient account number
-              must contain exactly 9 digits.
+              must contain exactly 9 digits and must be registered.
             </p>
           </div>
         </div>
