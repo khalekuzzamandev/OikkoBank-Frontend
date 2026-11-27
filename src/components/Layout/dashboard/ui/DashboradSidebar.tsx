@@ -20,9 +20,7 @@ import {
   ShieldAlert,
   ArrowLeftRight,
   ArrowUpFromLine,
-  Bell,
   UserRound,
-  FileText,
   ArrowRightLeft,
   Menu,
   X,
@@ -30,6 +28,7 @@ import {
   Landmark,
 } from "lucide-react";
 import Profile from "./Profile";
+import { FaHistory } from "react-icons/fa";
 
 const DashboardItem = {
   admin: [
@@ -64,7 +63,7 @@ const DashboardItem = {
     { icon: HandCoins, label: "Loans", href: "/dashboard/customer/loans" },
     { icon: ArrowUpFromLine, label: "Withdrawals", href: "/dashboard/customer/withdrawals" },
     { icon: UserRound, label: "My Profile", href: "/dashboard/customer/profile" },
-    { icon: ArrowLeftRight, label: "Transactions", href: "/dashboard/customer/transactions" },
+    { icon: FaHistory, label: "Transactions", href: "/dashboard/customer/transactions" },
    
   ],
 };
