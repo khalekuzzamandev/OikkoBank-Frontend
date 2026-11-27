@@ -1,11 +1,12 @@
+import DepositRequestTable from '@/components/Layout/dashboard/DepositsRequest';
 import React from 'react';
 
-const AllDepostits = () => {
+const page = () => {
   return (
-    <div>
-      
+    <div className='px-10'>
+      <DepositRequestTable/>
     </div>
   );
 };
 
-export default AllDepostits;
+export default page;
