@@ -14,7 +14,10 @@ import {
   CircleCheck,
 } from "lucide-react";
 
-import { getCustomerBankAccounts } from "@/components/lib/Apis/accounts/account";
+import {
+  getCustomerBankAccounts,
+  updateCustomerBankAccount,
+} from "@/components/lib/Apis/accounts/account";
 
 const CustomerTransferBlance = () => {
   const {
@@ -46,6 +49,11 @@ const CustomerTransferBlance = () => {
       return;
     }
 
+    if (!primaryAccount._id) {
+      setError("Sender account ID is missing.");
+      return;
+    }
+
     if (primaryAccount.status?.toLowerCase() !== "active") {
       setError("Your bank account is not active.");
       return;
@@ -68,17 +76,11 @@ const CustomerTransferBlance = () => {
 
     // Balance Validation
     if (transferAmount > availableBalance) {
-      setError("Insufficient account balance");
+      setError("Insufficient account balance.");
       return;
     }
 
     // Recipient Account Validation
-    if (!recipientAccountNumber) {
-      setError("Please enter recipient account number.");
-      return;
-    }
-
-    // Exactly 9 Digits
     if (!/^\d{9}$/.test(recipientAccountNumber)) {
       setError("Account number must be exactly 9 digits.");
       return;
@@ -86,7 +88,8 @@ const CustomerTransferBlance = () => {
 
     // Prevent Own Account Transfer
     if (
-      recipientAccountNumber === String(primaryAccount.accountNumber).trim()
+      recipientAccountNumber ===
+      String(primaryAccount.accountNumber).trim()
     ) {
       setError("You cannot transfer money to your own account.");
       return;
@@ -95,16 +98,16 @@ const CustomerTransferBlance = () => {
     setLoading(true);
 
     try {
-      // Fetch All Customer Bank Accounts
+      // Get All Accounts
       const allUserAccount = await getCustomerBankAccounts();
 
       if (!allUserAccount || allUserAccount.success === false) {
         throw new Error(
-          allUserAccount?.message || "Unable to verify recipient account."
+          allUserAccount?.message || "Unable to fetch accounts."
         );
       }
 
-      // Extract Accounts From API Response
+      // Extract Accounts
       const accountsData = allUserAccount.data;
 
       const customerAccounts = Array.isArray(accountsData)
@@ -113,32 +116,49 @@ const CustomerTransferBlance = () => {
           ? [accountsData]
           : [];
 
-      // Find Recipient Account
+      // Find Receiver Account
       const recipientAccount = customerAccounts.find(
         (account) =>
           String(account.accountNumber || "").trim() ===
           recipientAccountNumber
       );
 
-      // Account Not Registered
       if (!recipientAccount) {
-        setError("This account number is not registered.");
-        return;
+        throw new Error("This account number is not registered.");
       }
 
-      // Recipient Account Must Be Active
-      if (recipientAccount.status?.toLowerCase() !== "active") {
-        setError("Recipient bank account is not active.");
-        return;
+      if (!recipientAccount._id) {
+        throw new Error("Receiver account ID is missing.");
       }
+
+      if (recipientAccount.status?.toLowerCase() !== "active") {
+        throw new Error("Recipient bank account is not active.");
+      }
+
+      const senderBalance = Number(primaryAccount.balance || 0);
+      const receiverBalance = Number(recipientAccount.balance || 0);
+
+      if (
+        !Number.isFinite(senderBalance) ||
+        !Number.isFinite(receiverBalance)
+      ) {
+        throw new Error("Invalid account balance.");
+      }
+
+      if (transferAmount > senderBalance) {
+        throw new Error("Insufficient account balance.");
+      }
+
+      // Calculate New Balances
+      const newSenderBalance = senderBalance - transferAmount;
+      const newReceiverBalance = receiverBalance + transferAmount;
 
       // Prepare Transfer Data
       const transferData = {
         transferAmount,
-
         recipientAccountNumber,
 
-        recipientAccountId: recipientAccount._id || "",
+        recipientAccountId: recipientAccount._id,
         recipientAccountName: recipientAccount.accountName,
         recipientAccountType: recipientAccount.accountType,
         recipientEmail: recipientAccount.userEmail || "",
@@ -146,28 +166,75 @@ const CustomerTransferBlance = () => {
         userId: user.id,
         userEmail: user.email || primaryAccount.userEmail || "",
 
-        accountId: primaryAccount._id || "",
+        accountId: primaryAccount._id,
         accountNumber: primaryAccount.accountNumber,
         accountName: primaryAccount.accountName,
         accountType: primaryAccount.accountType,
 
-        availableBalance,
+        availableBalance: senderBalance,
 
         transactionType: "Transfer",
-        transactionStatus: "Pending",
+        transactionStatus: "Completed",
         transactionDate: new Date().toISOString(),
       };
 
-      console.log("========== TRANSFER FORM DATA ==========");
-      console.log(transferData);
-      console.log("========================================");
+      // Step 1: Update Sender Balance
+      const senderResult = await updateCustomerBankAccount(
+        primaryAccount._id,
+        {
+          balance: newSenderBalance,
+        }
+      );
+
+      if (!senderResult || senderResult.success === false) {
+        throw new Error(
+          senderResult?.message || "Sender balance update failed."
+        );
+      }
+
+      // Step 2: Update Receiver Balance
+      const receiverResult = await updateCustomerBankAccount(
+        recipientAccount._id,
+        {
+          balance: newReceiverBalance,
+        }
+      );
+
+      if (!receiverResult || receiverResult.success === false) {
+        // Try to restore Sender Balance
+        const rollbackResult = await updateCustomerBankAccount(
+          primaryAccount._id,
+          {
+            balance: senderBalance,
+          }
+        );
+
+        if (!rollbackResult || rollbackResult.success === false) {
+          throw new Error(
+            "Receiver update failed and sender rollback also failed. Please contact bank support immediately."
+          );
+        }
+
+        throw new Error(
+          receiverResult?.message ||
+          "Receiver update failed. Sender balance was restored."
+        );
+      }
+
+      // Transfer Successful
+      console.log("TRANSFER SUCCESS:", transferData);
+
+      console.log("Sender New Balance:", newSenderBalance);
+      console.log("Receiver New Balance:", newReceiverBalance);
 
       setSuccess(
-        `Recipient verified successfully! Account Holder: ${recipientAccount.accountName}.`
+        `৳${transferAmount.toLocaleString("en-BD")} successfully transferred to ${recipientAccount.accountName}.`
       );
 
       form.reset();
 
+      // Refresh Page Data
+      window.location.reload();
     } catch (err) {
       setError(
         err instanceof Error
@@ -249,7 +316,28 @@ const CustomerTransferBlance = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* Amount and Recipient Account */}
+          {/* Sender Account */}
+          <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
+            <div className="flex items-center gap-2 text-[#003566]">
+              <Wallet size={19} />
+              <h3 className="font-semibold">Sender Account</h3>
+            </div>
+
+            <p className="mt-2 text-sm text-slate-600">
+              {primaryAccount.accountName}
+            </p>
+
+            <p className="text-sm text-slate-500">
+              Account: {primaryAccount.accountNumber}
+            </p>
+
+            <p className="mt-2 font-bold text-[#003566]">
+              Available Balance: ৳
+              {availableBalance.toLocaleString("en-BD")}
+            </p>
+          </div>
+
+          {/* Amount and Recipient */}
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
             {/* Transfer Amount */}
@@ -278,8 +366,7 @@ const CustomerTransferBlance = () => {
               </div>
 
               <p className="mt-2 text-xs text-slate-500">
-                Minimum: ৳500 | Available Balance: ৳
-                {availableBalance.toLocaleString("en-BD")}
+                Minimum: ৳500
               </p>
             </div>
 
@@ -324,7 +411,7 @@ const CustomerTransferBlance = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
               <Info size={18} className="shrink-0" />
               {error}
             </div>
@@ -332,7 +419,7 @@ const CustomerTransferBlance = () => {
 
           {/* Success Message */}
           {success && (
-            <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+            <div className="flex items-start gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
               <ShieldCheck size={18} className="shrink-0" />
               {success}
             </div>
