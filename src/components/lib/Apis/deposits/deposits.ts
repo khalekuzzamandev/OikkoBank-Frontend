@@ -172,3 +172,90 @@ export const getDepositById = async (
     };
   }
 };
+
+// dleet deposit
+
+export const deleteDeposit = async (
+  id: string
+): Promise<DepositResponse> => {
+  try {
+    if (!id.trim()) {
+      throw new Error("Deposit ID is required.");
+    }
+
+    const url = getApiURL(
+      `/api/deposits/${encodeURIComponent(id)}`
+    );
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    return await parseResponse(response);
+  } catch (error: unknown) {
+    console.error("Delete Deposit Error:", error);
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to delete deposit.",
+    };
+  }
+};
+
+
+// update deposit
+
+export interface UpdateDepositData {
+  depositAmount?: number;
+  currency?: string;
+  depositMethod?: string;
+
+  transactionStatus?: "Pending" | "Success" | "Completed" | "Failed";
+  transactionDate?: string;
+
+  description?: string;
+}
+
+export const updateDeposit = async (
+  id: string,
+  updateData: UpdateDepositData
+): Promise<DepositResponse> => {
+  try {
+    if (!id.trim()) {
+      throw new Error("Deposit ID is required.");
+    }
+
+    const url = getApiURL(
+      `/api/deposits/${encodeURIComponent(id)}`
+    );
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(updateData),
+      cache: "no-store",
+    });
+
+    return await parseResponse(response);
+  } catch (error: unknown) {
+    console.error("Update Deposit Error:", error);
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to update deposit.",
+    };
+  }
+};
