@@ -476,7 +476,7 @@ export default function AllLoans() {
     : [];
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-6 px-10">
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-3">

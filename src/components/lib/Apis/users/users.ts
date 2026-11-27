@@ -89,7 +89,7 @@ export const editUser = async (
 
     const result = await res.json();
 
-    if (!res.ok) {
+    if (!res.ok || result?.success === false) {
       throw new Error(result.message || "Failed to update customer");
     }
 
