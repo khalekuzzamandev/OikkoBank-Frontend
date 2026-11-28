@@ -4,11 +4,14 @@
 import { useState } from "react";
 import { Search, X, ArrowRight, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/Redux/features/UserSlice";
+import { getDashboardHref } from "@/components/lib/dashboard-route";
 
 const Downbar = () => {
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -24,11 +27,11 @@ const Downbar = () => {
     e.preventDefault();
 
     if (searchValue.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchValue.trim())}`;
+      router.push(`/search?q=${encodeURIComponent(searchValue.trim())}`);
     }
   };
 
-  const homeHref = user?.role ? `/${user.role.toLowerCase()}` : "/";
+  const homeHref = user ? getDashboardHref(user.role) : "/";
 
 
 
@@ -60,9 +63,9 @@ const Downbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {user?.status === "active" && (
+            {user && (
               <Link
-                href={`/dashboard/${user?.role}`}
+                href={getDashboardHref(user.role)}
                 aria-label="Dashboard"
                 title="Dashboard"
                 className="flex h-10 w-11 items-center justify-center rounded-md bg-[#003566] text-white transition hover:bg-[#00264a]"

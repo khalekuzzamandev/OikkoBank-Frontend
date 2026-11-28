@@ -22,6 +22,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { selectUser } from "@/Redux/features/UserSlice";
 import { useSelector } from "react-redux";
+import { getDashboardHref } from "@/components/lib/dashboard-route";
 
 const NavbarContent = () => {
   const router = useRouter();
@@ -85,9 +86,9 @@ const NavbarContent = () => {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {user?.status === "active" && (
+            {user && (
               <Link
-                href={`/dashboard/${user.role}`}
+                href={getDashboardHref(user.role)}
                 aria-label="Dashboard"
                 title="Dashboard"
                 onClick={closeMenu}
