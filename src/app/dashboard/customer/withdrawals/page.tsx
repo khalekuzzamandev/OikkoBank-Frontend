@@ -537,7 +537,7 @@ const CustomerwithdrawalsPage = () => {
                 </div>
 
                 <p className="mt-2 text-xs text-gray-500">
-                  Your own account number is not allowed.
+                  This is Demo Recipt Number =[ 341131322 ]
                 </p>
               </div>
             </div>
