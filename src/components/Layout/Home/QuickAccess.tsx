@@ -50,15 +50,15 @@ const services = [
     icon: Percent,
   },
   {
-    title: "OBU Deposit",
-    subtitle: "Accounts",
-    href: "/accounts/obu",
+    title: "Oikko Career",
+    subtitle: "Career Page",
+    href: "/career",
     icon: Globe,
   },
   {
-    title: "Apply for",
-    subtitle: "DPS",
-    href: "/dps/apply",
+    title: "Investors",
+    subtitle: "investors relationship",
+    href: "/investors",
     icon: PiggyBank,
   },
 ];
