@@ -385,6 +385,7 @@ const CustomerTransferBlance = () => {
 
                 <input
                   type="text"
+                  defaultValue={786073187}
                   name="recipientAccountNumber"
                   inputMode="numeric"
                   maxLength={9}
