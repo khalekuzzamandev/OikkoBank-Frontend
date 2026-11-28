@@ -15,8 +15,15 @@ import {
 } from "lucide-react";
 
 import { useLoggedInUserAccounts } from "@/components/lib/hooks/useLoggedInUserAccounts";
-import { createWithdraw } from "@/components/lib/Apis/withdrawals/withdrawals";
-import { getCustomerBankAccounts } from "@/components/lib/Apis/accounts/account";
+
+import {
+  createWithdraw,
+} from "@/components/lib/Apis/withdrawals/withdrawals";
+
+import {
+  getCustomerBankAccounts,
+  updateCustomerBankAccount,
+} from "@/components/lib/Apis/accounts/account";
 
 interface BankAccount {
   _id: string;
@@ -52,15 +59,22 @@ const CustomerwithdrawalsPage = () => {
     error: userError,
   } = useLoggedInUserAccounts();
 
-  // Logged-in User Account Information
+  // Local Balance State
+  const [currentBalance, setCurrentBalance] = useState(0);
+
+  useEffect(() => {
+    if (primaryAccount) {
+      setCurrentBalance(Number(primaryAccount.balance || 0));
+    }
+  }, [primaryAccount]);
+
+  // Logged-in User Information
   const senderUserId = user?.id || "";
 
   const senderAccountNumber =
     primaryAccount?.accountNumber || "";
 
-  const senderCurrentBalance = Number(
-    primaryAccount?.balance ?? 0
-  );
+  const senderCurrentBalance = currentBalance;
 
   // Check Own Account
   const isOwnAccount = (account: BankAccount) => {
@@ -209,8 +223,13 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
-    if (!primaryAccount?.accountNumber) {
-      setError("Your sender account number was not found.");
+    if (!primaryAccount?._id || !primaryAccount.accountNumber) {
+      setError("Your sender account information was not found.");
+      return;
+    }
+
+    if (primaryAccount.status?.toLowerCase() !== "active") {
+      setError("Your bank account is not active.");
       return;
     }
 
@@ -219,7 +238,7 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
-    // Verify Target Account Again
+    // Verify Receiver Account Again
     const matchedAccount = allAccounts.find(
       (account) =>
         account.accountNumber?.trim() === receiptNumber.trim() &&
@@ -255,7 +274,7 @@ const CustomerwithdrawalsPage = () => {
       return;
     }
 
-    // Check Logged-in User Current Balance
+    // Validate Sender Balance
     if (
       !Number.isFinite(senderCurrentBalance) ||
       senderCurrentBalance < 0
@@ -266,47 +285,84 @@ const CustomerwithdrawalsPage = () => {
 
     if (withdrawalAmount > senderCurrentBalance) {
       setError(
-        `Insufficient balance! Your current balance is ৳${senderCurrentBalance.toLocaleString("en-BD")}. You cannot withdraw more than your available balance.`
+        `Insufficient balance! Your current balance is ৳${senderCurrentBalance.toLocaleString("en-BD")}.`
       );
+      return;
+    }
+
+    // Validate Sender Account ID
+    if (!primaryAccount._id) {
+      setError("Sender account ID is missing.");
       return;
     }
 
     setLoading(true);
 
+    // Store Previous Balance for Rollback
+    const previousBalance = senderCurrentBalance;
+
+    // Calculate New Balance
+    const newBalance = previousBalance - withdrawalAmount;
+
+    let balanceUpdated = false;
+
     try {
+      const transactionDate = new Date().toISOString();
+
+      // Withdrawal Request Data
       const withdrawalData = {
-        // Withdrawal Amount
         amount: withdrawalAmount,
         withdrawalAmount,
 
-        // Sender Information (Logged-in User)
+        // Sender Information
         senderUserId: user.id,
         senderAccountNumber: senderAccountNumber,
-        senderCurrentBalance: senderCurrentBalance,
+        senderCurrentBalance: previousBalance,
 
-        // Receipt Number = Logged-in User's Account Number
+        // Receipt Number
         receiptNumber: senderAccountNumber,
 
-        // Other Person's Account Information
+        // Receiver / Other Person Information
         accountId: matchedAccount._id,
         accountNumber: matchedAccount.accountNumber,
         accountName: matchedAccount.accountName,
         accountType: matchedAccount.accountType,
-        accountEmail: matchedAccount.userEmail,
+        accountEmail: matchedAccount.userEmail || "",
         accountStatus: matchedAccount.status,
 
-        // Logged-in User Information
+        // Logged-in User
         userId: user.id,
         userEmail: user.email,
 
         // Transaction Information
-        currency: matchedAccount.currency || "BDT",
+        currency: primaryAccount.currency || "BDT",
         withdrawalMethod: "Branch Cash Withdrawal",
         transactionType: "Withdrawal",
         transactionStatus: "Pending",
-        transactionDate: new Date().toISOString(),
+        transactionDate,
       };
 
+      // Step 1: Update Logged-in User Balance
+      const balanceResult = await updateCustomerBankAccount(
+        primaryAccount._id,
+        {
+          balance: newBalance,
+        }
+      );
+
+      if (!balanceResult || balanceResult.success === false) {
+        throw new Error(
+          balanceResult?.message ||
+          "Failed to update your account balance."
+        );
+      }
+
+      balanceUpdated = true;
+
+      // Update Local Balance
+      setCurrentBalance(newBalance);
+
+      // Step 2: Create Withdrawal Request
       const result = await createWithdraw(withdrawalData);
 
       if (!result || result.success === false) {
@@ -316,21 +372,44 @@ const CustomerwithdrawalsPage = () => {
         );
       }
 
+      // Step 3: Withdrawal Successful
       setSuccess(
-        result.message ||
-        "Withdrawal request submitted successfully!"
+        `৳${withdrawalAmount.toLocaleString("en-BD")} withdrawal request submitted successfully. Your new balance is ৳${newBalance.toLocaleString("en-BD")}.`
       );
 
+      // Reset Form
       setAmount("");
       setReceiptNumber("");
       setWithdrawalAccount(null);
 
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again."
-      );
+      // Step 4: Rollback Balance If Request Fails
+      if (balanceUpdated) {
+        try {
+          const rollbackResult =
+            await updateCustomerBankAccount(
+              primaryAccount._id,
+              {
+                balance: previousBalance,
+              }
+            );
+
+          if (
+            !rollbackResult ||
+            rollbackResult.success === false
+          ) {
+            throw new Error("Rollback failed.");
+          }
+
+          setCurrentBalance(previousBalance);
+        } catch {
+          throw new Error(
+            "Withdrawal request failed and balance restoration also failed. Please contact bank support immediately."
+          );
+        }
+      }
+
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -384,7 +463,7 @@ const CustomerwithdrawalsPage = () => {
             </h3>
 
             <p className="mt-1 text-sm leading-6 text-blue-800">
-              Enter another person&apos;s active bank account number
+              Enter another person's active bank account number
               to request a withdrawal. You cannot withdraw from
               your own account using this service. Minimum amount is ৳500.
             </p>
@@ -410,7 +489,7 @@ const CustomerwithdrawalsPage = () => {
                 </h2>
 
                 <p className="text-xs text-gray-500">
-                  Verify another person&apos;s account and enter withdrawal amount.
+                  Verify another person's account and enter withdrawal amount.
                 </p>
               </div>
             </div>
@@ -489,7 +568,7 @@ const CustomerwithdrawalsPage = () => {
               {/* Target Account Number */}
               <div>
                 <label className={labelClass}>
-                  Other Person&apos;s Account Number
+                  Other Person's Account Number
                   <span className="text-red-500"> *</span>
                 </label>
 
@@ -537,7 +616,7 @@ const CustomerwithdrawalsPage = () => {
                 </div>
 
                 <p className="mt-2 text-xs text-gray-500">
-                  This is Demo Recipt Number =[ 341131322 ]
+                  Demo Receipt Number = 341131322
                 </p>
               </div>
             </div>
@@ -616,12 +695,10 @@ const CustomerwithdrawalsPage = () => {
                 {success}
               </div>
             )}
-
           </div>
 
           {/* Footer */}
           <div className="flex flex-col-reverse justify-between gap-4 border-t border-gray-100 bg-gray-50 p-5 sm:flex-row sm:items-center sm:px-8">
-
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <ShieldCheck size={16} className="text-green-600" />
               Your withdrawal request will be reviewed by the bank.
@@ -668,10 +745,9 @@ const CustomerwithdrawalsPage = () => {
             Your withdrawal request will remain{" "}
             <strong className="text-amber-600">Pending</strong> until
             the bank verifies and processes it. Your account balance
-            will not be deducted at this stage.
+            is deducted immediately when you submit the request.
           </p>
         </div>
-
       </div>
     </div>
   );
