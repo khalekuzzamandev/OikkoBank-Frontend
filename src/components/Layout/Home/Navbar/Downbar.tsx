@@ -15,8 +15,7 @@ const Downbar = () => {
   const user = useSelector(selectUser);
 
   const navLinks = [
-    { name: "ALL ACCOUNTS AT A GLANCE", href: "/accounts" },
-    { name: "FOR YOU", href: "/for-you" },
+    { name: "HOME", href: "/" },
     { name: "FOR YOUR BUSINESS", href: "/business" },
     { name: "ABOUT US", href: "/about" },
   ];

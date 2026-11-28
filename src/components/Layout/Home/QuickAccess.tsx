@@ -10,6 +10,8 @@ import {
   Percent,
   Globe,
   PiggyBank,
+  Headset,
+  CircleUser,
 } from "lucide-react";
 
 const services = [
@@ -32,16 +34,16 @@ const services = [
     icon: MapPinned,
   },
   {
-    title: "Oikko",
-    subtitle: "Shonjojog Login",
-    href: "/login",
-    icon: Store,
+    title: "Contact Us",
+    subtitle: "Contact page",
+    href: "/contact",
+    icon: CircleUser,
   },
   {
-    title: "Apply for",
-    subtitle: "a Loan",
-    href: "/loans/apply",
-    icon: FilePenLine,
+    title: "Help Center",
+    subtitle: "Need Help?",
+    href: "/help-center",
+    icon: Headset,
   },
   {
     title: "View",
