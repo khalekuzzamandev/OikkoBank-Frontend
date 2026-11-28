@@ -264,21 +264,6 @@ export default function AccountPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Pending Accounts</p>
-                <h2 className="mt-2 text-2xl font-bold text-yellow-600">
-                  {
-                    accounts.filter(
-                      (item) => item.status?.toLowerCase() === "pending"
-                    ).length
-                  }
-                </h2>
-              </div>
-              <AlertCircle className="text-yellow-600" size={27} />
-            </div>
-          </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <div className="flex items-center justify-between">

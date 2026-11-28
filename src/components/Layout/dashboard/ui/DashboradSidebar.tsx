@@ -61,7 +61,7 @@ const DashboardItem = {
     { icon: Banknote, label: "Deposits", href: "/dashboard/customer/deposits" },
     { icon: ArrowRightLeft, label: "Transfer", href: "/dashboard/customer/transfer" },
     { icon: HandCoins, label: "Loans", href: "/dashboard/customer/loans" },
-    { icon: ArrowUpFromLine, label: "Withdrawals", href: "/dashboard/customer/withdrawals" },
+    { icon: ArrowUpFromLine, label: "Withdraw", href: "/dashboard/customer/withdrawals" },
     { icon: UserRound, label: "My Profile", href: "/dashboard/customer/profile" },
     { icon: FaHistory, label: "Transactions", href: "/dashboard/customer/transactions" },
    

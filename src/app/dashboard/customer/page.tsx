@@ -293,7 +293,7 @@ export default function CustomerDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F4F7FB]">
+    <div className="min-h-screen bg-[#F4F7FB] px-10">
 
       {/* Welcome Header */}
       <header className="mb-8 rounded-2xl bg-gradient-to-r from-[#003566] to-[#1762AE] p-5 text-white shadow-sm sm:p-7">
