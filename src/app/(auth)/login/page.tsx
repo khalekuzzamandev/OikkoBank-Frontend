@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,9 @@ import { useAppDispatch } from "@/Redux/hooks";
 import { authClient } from "@/components/lib/auth-client";
 
 const REQUIRED_MSG = "This field is required";
+const subscribeToYear = () => () => {};
+const getCurrentYearSnapshot = () => String(new Date().getFullYear());
+const getServerYearSnapshot = () => "";
 
 const INPUT_CLASS =
   "w-full rounded-md border bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:ring-2";
@@ -58,6 +61,11 @@ const demoAccounts = [
 ];
 
 const LoginPage = () => {
+  const currentYear = useSyncExternalStore(
+    subscribeToYear,
+    getCurrentYearSnapshot,
+    getServerYearSnapshot
+  );
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -382,7 +390,7 @@ const LoginPage = () => {
         </p>
 
         <p className="mt-5 text-center text-[10px] text-gray-400">
-          © {new Date().getFullYear()} OikkoBank. All rights reserved.
+          © {currentYear} OikkoBank. All rights reserved.
         </p>
       </div>
     </main>

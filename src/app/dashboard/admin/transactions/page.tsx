@@ -4,7 +4,7 @@ import AllTransitions from '../../admin/transactions/page';
 const page = () => {
   return (
     <div>
-      <AllTransitions />
+     dd
     </div>
   );
 };

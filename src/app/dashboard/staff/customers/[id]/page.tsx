@@ -15,7 +15,6 @@ import {
   LockKeyhole,
   Database,
   Info,
-  XCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -539,7 +538,15 @@ function CustomerDetailsContent() {
             <div className="flex flex-wrap items-center gap-2 rounded-md bg-white px-3 py-2">
 
               {/* Edit button always visible */}
-              <EditCutomer customerId={id} />
+              <EditCutomer
+                customerId={id}
+                initialData={customer}
+                onUpdated={(changes) =>
+                  setCustomer((current) =>
+                    current ? { ...current, ...changes } : current
+                  )
+                }
+              />
 
               {/* Approve and Reject only when NOT active */}
               {!isActive && (

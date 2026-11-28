@@ -53,7 +53,7 @@ export const deleteUser = async (customerId: string) => {
 
     const result = await res.json();
 
-    if (!res.ok) {
+    if (!res.ok || result?.success === false) {
       throw new Error(result.message || "Failed to delete customer");
     }
 

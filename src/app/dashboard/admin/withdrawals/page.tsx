@@ -1,3 +1,10 @@
-export default function Page() {
-  return <main>SMS</main>;
-}
+
+const page = () => {
+  return (
+    <div>
+      hello
+    </div>
+  );
+};
+
+export default page;

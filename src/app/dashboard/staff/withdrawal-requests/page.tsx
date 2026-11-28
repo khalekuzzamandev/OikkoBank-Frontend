@@ -423,8 +423,8 @@ export default function AllWithdrawRequests() {
                 type="button"
                 onClick={() => setActiveFilter(option.label)}
                 className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${isActive
-                    ? "border-[#003566] bg-[#003566] text-white shadow-sm"
-                    : "border-gray-200 bg-white text-gray-600 hover:border-[#003566] hover:text-[#003566]"
+                  ? "border-[#003566] bg-[#003566] text-white shadow-sm"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-[#003566] hover:text-[#003566]"
                   }`}
               >
                 <Icon size={16} />
@@ -432,8 +432,8 @@ export default function AllWithdrawRequests() {
 
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs ${isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-gray-100 text-gray-600"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-100 text-gray-600"
                     }`}
                 >
                   {getCount(option.label)}
