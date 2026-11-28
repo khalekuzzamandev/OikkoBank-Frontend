@@ -1,6 +1,11 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import {
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type FormEvent,
+} from "react";
 import {
   AlertCircle,
   Bell,
@@ -135,7 +140,7 @@ export default function AdminSetting() {
   );
 
   const handleProfileSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
     setFeedback(null);
@@ -183,7 +188,7 @@ export default function AdminSetting() {
   };
 
   const handlePasswordSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
     setFeedback(null);
