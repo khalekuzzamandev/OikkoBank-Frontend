@@ -63,7 +63,7 @@ const Downbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {user && (
+            {user?.status === "active" && (
               <Link
                 href={getDashboardHref(user.role)}
                 aria-label="Dashboard"

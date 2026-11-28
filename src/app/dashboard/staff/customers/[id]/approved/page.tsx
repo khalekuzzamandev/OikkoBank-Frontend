@@ -330,12 +330,7 @@ function ApprovedContent() {
 
             {/* Account Information */}
             <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-800 dark:bg-gray-900">
-              <div className="mb-5 flex items-center gap-2 border-b border-gray-100 pb-4 dark:border-gray-800">
-                <CreditCard size={20} className="text-[#003566]" />
-                <h2 className="font-semibold text-gray-900 dark:text-white">
-                  Account Information
-                </h2>
-              </div>
+
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div>

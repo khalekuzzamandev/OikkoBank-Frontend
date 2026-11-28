@@ -1,8 +1,8 @@
+
 "use client";
 
 import Link from "next/link";
 import {
-  BriefcaseBusiness,
   CircleUser,
   Globe,
   Headset,
@@ -53,7 +53,6 @@ const publicServices = [
     href: "/investors",
     icon: PiggyBank,
   },
-
 ];
 
 const loggedOutActions = [
@@ -74,15 +73,17 @@ const loggedOutActions = [
 const QuickAccess = () => {
   const { data: session, isPending } = authClient.useSession();
 
-  const accountAction = session?.user
+  const isActiveUser = session?.user?.status === "active";
+
+  const accountAction = isActiveUser
     ? [
-        {
-          title: "Dashboard",
-          subtitle: "Go to your account",
-          href: getDashboardHref(session.user.role),
-          icon: LayoutDashboard,
-        },
-      ]
+      {
+        title: "Dashboard",
+        subtitle: "Go to your account",
+        href: getDashboardHref(session.user.role),
+        icon: LayoutDashboard,
+      },
+    ]
     : loggedOutActions;
 
   const services = isPending
@@ -111,9 +112,11 @@ const QuickAccess = () => {
                   strokeWidth={1.5}
                   className="mb-0.5 text-[#1762AE] transition-transform duration-300 group-hover:-translate-y-1 group-hover:text-[#003566]"
                 />
+
                 <span className="text-[13px] font-medium leading-[17px] text-[#00509D] transition-colors group-hover:text-[#003566] sm:text-sm">
                   {service.title}
                 </span>
+
                 <span className="text-[13px] font-medium leading-[17px] text-[#00509D] transition-colors group-hover:text-[#003566] sm:text-sm">
                   {service.subtitle}
                 </span>

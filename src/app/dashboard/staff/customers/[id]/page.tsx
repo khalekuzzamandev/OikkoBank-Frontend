@@ -537,16 +537,6 @@ function CustomerDetailsContent() {
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-2 rounded-md bg-white px-3 py-2">
 
-              {/* Edit button always visible */}
-              <EditCutomer
-                customerId={id}
-                initialData={customer}
-                onUpdated={(changes) =>
-                  setCustomer((current) =>
-                    current ? { ...current, ...changes } : current
-                  )
-                }
-              />
 
               {/* Approve and Reject only when NOT active */}
               {!isActive && (
